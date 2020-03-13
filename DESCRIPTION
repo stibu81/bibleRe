@@ -1,0 +1,16 @@
+Package: bibleRe
+Title: Access the Webinterface of the Public Library in Koeniz
+Version: 0.0.0.9000
+Author: Stefan Lanz
+Maintainer: Stefan Lanz <slanz1137@gmail.com>
+Description: The public library of Koeniz, Switzerland, offers a
+  webinterface that allows users to check their rented documents,
+  extend the rental period, etc. This package offers an interface
+  to use some of that functionality.
+License: MIT + file LICENSE
+Suggests: 
+    testthat
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.0
