@@ -3,5 +3,6 @@
 export(bib_list_documents)
 export(bib_login)
 export(bib_read_login_data)
+export(run_biblere)
 importFrom(dplyr,.data)
 importFrom(magrittr,"%>%")

@@ -1,5 +1,3 @@
-library(DT)
-
 ui <- fluidPage(
 
   titlePanel("bibleRe: Zugang zum Webinterface der K\u00f6nizer Bibliotheken"),
@@ -16,7 +14,7 @@ ui <- fluidPage(
       br(), br(),
       dateInput("due_date",
                 "Rückgabe bis:",
-                value = Sys.Date() + 7,
+                value = Sys.Date() + getOption("biblere_n_due_days"),
                 min = Sys.Date(),
                 max = Sys.Date() + 60,
                 format = "dd.mm.yyyy",
@@ -33,7 +31,7 @@ ui <- fluidPage(
 
     # main panel #####
     mainPanel(
-      DTOutput("table"),
+      DT::DTOutput("table"),
       width = 10
     )
   )

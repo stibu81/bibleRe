@@ -1,6 +1,5 @@
 library(magrittr)
 library(bibleRe)
-library(DT)
 library(dplyr)
 
 server <- function(input, output, session) {
@@ -8,7 +7,7 @@ server <- function(input, output, session) {
   state <- reactiveValues(table = NULL)
 
   # read the login data and fill menu for user selection
-  users <- bib_read_login_data("~/.biblere_passwords")
+  users <- bib_read_login_data(getOption("biblere_login_data_file"))
   choices <-
     if (length(users) == 0) {
       "Passwortdatei nicht gefunden!"
@@ -47,7 +46,7 @@ server <- function(input, output, session) {
     }
   )
 
-  output$table <- renderDT(
+  output$table <- DT::renderDT(
     if (is.null(state$table)) {
       NULL
     } else {
