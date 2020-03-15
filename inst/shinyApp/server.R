@@ -1,6 +1,7 @@
 library(magrittr)
 library(bibleRe)
 library(DT)
+library(dplyr)
 
 server <- function(input, output, session) {
 
@@ -40,21 +41,30 @@ server <- function(input, output, session) {
               bib_list_documents()
           }) %>%
         set_names(get_users) %>%
-        dplyr::bind_rows(.id = "account") %>%
-        dplyr::select(-"renewal_date") %>%
-        dplyr::arrange(.data$due_date) %>%
-        dplyr::select(Konto = "account",
-                      Autor = "author",
-                      Titel = "title",
-                      "F\u00e4lligkeit" = "due_date",
-                      "Verl." = "n_renewal")
+        bind_rows(.id = "account") %>%
+        select(-"renewal_date") %>%
+        arrange(.data$due_date)
     }
   )
 
   output$table <- renderDT(
-    state$table,
-    options = list(lengthMenu = c(10, 20, 50, 100)),
-    rownames = FALSE
+    if (is.null(state$table)) {
+      NULL
+    } else {
+      table <- filter(state$table, .data$due_date <= input$due_date)
+      if (!input$show_renewable) {
+        table %<>% filter(.data$n_renewal == 2)
+      }
+      if (!input$show_nonrenewable) {
+        table %<>% filter(.data$n_renewal != 2)
+      }
+      table
+    },
+    options = list(lengthMenu = c(10, 20, 50, 100),
+                   pageLength = 100),
+    rownames = FALSE,
+    colnames = c("Konto", "Exemplar", "Autor", "Titel",
+                 "F\u00e4lligkeit", "Verl.")
   )
 
 }
