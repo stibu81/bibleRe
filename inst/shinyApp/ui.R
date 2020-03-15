@@ -8,10 +8,7 @@ ui <- fluidPage(
       selectInput(
         "select_account",
         "Konto auswählen:",
-        ""),
-      actionButton("get_documents",
-                   "Ausleihen anzeigen"),
-      br(), br(),
+        "laden ..."),
       dateInput("due_date",
                 "Rückgabe bis:",
                 value = Sys.Date() + getOption("biblere_n_due_days"),

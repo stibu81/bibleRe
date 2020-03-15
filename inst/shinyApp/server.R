@@ -20,31 +20,22 @@ server <- function(input, output, session) {
                     selected = choices[1])
 
   # get documents if button is clicked
-  observeEvent(
-    input$get_documents,
-    {
-      get_users <-
-        if (input$select_account == "alle") {
-          names(users)
-        } else {
-          input$select_account
-        }
-      message("Getting documents for user(s) ",
-              paste(get_users, collapse = ", "))
+  if (length(choices) > 1) {
+    message("Getting documents for user(s) ",
+            paste(names(users), collapse = ", "))
 
-      state$table <- lapply(
-          get_users,
+    state$table <- lapply(
+          names(users),
           function(user) {
             bib_login(users[[user]][["username"]],
                       users[[user]][["password"]]) %>%
               bib_list_documents()
           }) %>%
-        set_names(get_users) %>%
+        set_names(names(users)) %>%
         bind_rows(.id = "account") %>%
         select(-"renewal_date") %>%
         arrange(.data$due_date)
-    }
-  )
+  }
 
   output$table <- DT::renderDT(
     if (is.null(state$table)) {
@@ -56,6 +47,9 @@ server <- function(input, output, session) {
       }
       if (!input$show_nonrenewable) {
         table %<>% filter(.data$n_renewal != 2)
+      }
+      if (input$select_account != "alle") {
+        table %<>% filter(.data$account == input$select_account)
       }
       DT::datatable(
         table,
