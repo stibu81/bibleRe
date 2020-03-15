@@ -37,3 +37,29 @@ run_biblere <- function(login_data_file = "~/.biblere_passwords",
     shiny::runApp(appDir, display.mode = "normal",
                   launch.browser = launch.browser)
 }
+
+
+# Helper function to filter the documents table
+filter_document_table <- function(table,
+                                  due_date,
+                                  show_renewable,
+                                  show_nonrenewable,
+                                  account,
+                                  link_id = TRUE) {
+
+  table %<>% filter(.data$due_date <= !!due_date)
+  if (!show_renewable) {
+    table %<>% filter(.data$n_renewal == 2)
+  }
+  if (!show_nonrenewable) {
+    table %<>% filter(.data$n_renewal != 2)
+  }
+  if (account != "alle") {
+    table %<>% filter(.data$account == !!account)
+  }
+  if (link_id) {
+    table %<>% mutate(id = as_document_link(id))
+  }
+
+  table
+}

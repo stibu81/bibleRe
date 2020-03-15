@@ -23,6 +23,8 @@ ui <- fluidPage(
       checkboxInput("show_nonrenewable",
                     "Nicht-verlängerbare anzeigen",
                     value = TRUE),
+      downloadButton("download_documents",
+                     "Liste speichern"),
       width = 2
     ),
 

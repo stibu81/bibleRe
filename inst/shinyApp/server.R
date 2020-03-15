@@ -4,8 +4,6 @@ library(dplyr)
 
 server <- function(input, output, session) {
 
-  state <- reactiveValues(table = NULL)
-
   # read the login data and fill menu for user selection
   users <- bib_read_login_data(getOption("biblere_login_data_file"))
   choices <-
@@ -24,7 +22,7 @@ server <- function(input, output, session) {
     message("Getting documents for user(s) ",
             paste(names(users), collapse = ", "))
 
-    state$table <- lapply(
+    full_table <- lapply(
           names(users),
           function(user) {
             bib_login(users[[user]][["username"]],
@@ -37,21 +35,16 @@ server <- function(input, output, session) {
         arrange(.data$due_date)
   }
 
+  # table output
   output$table <- DT::renderDT(
-    if (is.null(state$table)) {
+    if (is.null(full_table)) {
       NULL
     } else {
-      table <- filter(state$table, .data$due_date <= input$due_date)
-      if (!input$show_renewable) {
-        table %<>% filter(.data$n_renewal == 2)
-      }
-      if (!input$show_nonrenewable) {
-        table %<>% filter(.data$n_renewal != 2)
-      }
-      if (input$select_account != "alle") {
-        table %<>% filter(.data$account == input$select_account)
-      }
-      table %<>% mutate(id = as_document_link(id))
+      table <- filter_document_table(full_table,
+                                     input$due_date,
+                                     input$show_renewable,
+                                     input$show_nonrenewable,
+                                     input$select_account)
       DT::datatable(
         table,
         options = list(lengthMenu = c(10, 20, 50, 100),
@@ -64,8 +57,27 @@ server <- function(input, output, session) {
       DT::formatDate("due_date",
                      method = "toLocaleDateString",
                      params = "de-CH")
-    },
+    })
 
+  # download table
+  output$download_documents <- downloadHandler(
+    filename = "biblere_ausleihen.xlsx",
+    content = function(file) {
+      table <- filter_document_table(full_table,
+                                     input$due_date,
+                                     input$show_renewable,
+                                     input$show_nonrenewable,
+                                     input$select_account,
+                                     link_id = FALSE) %>%
+        mutate(due_date = format(due_date, format = "%d.%m.%Y")) %>%
+        set_names(c("Konto", "Exemplar", "Autor", "Titel",
+                     "F\u00e4lligkeit", "Verl."))
+      WriteXLS::WriteXLS(table, file,
+                         SheetNames = "Ausleihen",
+                         AdjWidth = TRUE,
+                         BoldHeaderRow = TRUE,
+                         FreezeRow = 1)
+    }
   )
 
 }
