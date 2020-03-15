@@ -22,6 +22,7 @@ bib_list_documents <- function(session) {
     replace_br(tab_node)
     table <- rvest::html_table(tab_node)
     table <- table[, names(table) != ""]  %>%
+      dplyr::as_tibble() %>%
       dplyr::rename(id = "Exemplarnr.",
                     author_title = "Autor / Titel",
                     due_date = "F\u00e4lligkeitsdatum",
@@ -36,7 +37,14 @@ bib_list_documents <- function(session) {
       ) %>%
       tidyr::replace_na(list(author = "---", title = "---"))
   } else {
-    table <- dplyr::tibble()
+    table <- dplyr::tibble(
+      id = integer(0),
+      author = character(0),
+      title = character(0),
+      due_date = as.Date(character(0)),
+      n_renewal = integer(0),
+      renewal_date = as.Date(character(0))
+    )
   }
 
   table
