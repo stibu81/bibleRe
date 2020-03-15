@@ -10,8 +10,8 @@
 
 bib_list_documents <- function(session) {
 
-  url2 <- "http://katalog.iz-region-bern.ch/WebOPAC-Koeniz/account/circulations?sort=Circulations.DueDate&page=1&pageSize=200"
-  page <- rvest::jump_to(session, url2)
+  page <- rvest::jump_to(session,
+                         bib_urls$documents)
 
   # extract the table
   tab_node <- page %>%

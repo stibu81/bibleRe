@@ -12,3 +12,13 @@
 ## usethis namespace: start
 ## usethis namespace: end
 NULL
+
+
+# List of relevant URLs
+
+bib_urls <- dplyr::tibble(
+  base_url = "http://katalog.iz-region-bern.ch/WebOPAC-Koeniz/account",
+  login = paste0(base_url, "/login"),
+  documents = paste0(base_url,
+                     "/circulations?sort=Circulations.DueDate&page=1&pageSize=200")
+)
