@@ -51,13 +51,15 @@ server <- function(input, output, session) {
       if (input$select_account != "alle") {
         table %<>% filter(.data$account == input$select_account)
       }
+      table %<>% mutate(id = as_document_link(id))
       DT::datatable(
         table,
         options = list(lengthMenu = c(10, 20, 50, 100),
                    pageLength = 100),
         rownames = FALSE,
         colnames = c("Konto", "Exemplar", "Autor", "Titel",
-                     "F\u00e4lligkeit", "Verl.")
+                     "F\u00e4lligkeit", "Verl."),
+        escape = FALSE
       ) %>%
       DT::formatDate("due_date",
                      method = "toLocaleDateString",

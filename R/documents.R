@@ -59,3 +59,8 @@ replace_br <- function(node) {
   xml2::xml_find_all(node, ".//br") %>%
     xml2::xml_remove()
 }
+
+as_document_link <- function(id) {
+  paste0("<a href=\"", bib_urls$notice, id,
+         "\" target=\"_blank\">", id, "</a>")
+}

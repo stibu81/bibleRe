@@ -17,8 +17,9 @@ NULL
 # List of relevant URLs
 
 bib_urls <- dplyr::tibble(
-  base_url = "http://katalog.iz-region-bern.ch/WebOPAC-Koeniz/account",
-  login = paste0(base_url, "/login"),
+  base_url = "http://katalog.iz-region-bern.ch/WebOPAC-Koeniz/",
+  login = paste0(base_url, "account/login"),
   documents = paste0(base_url,
-                     "/circulations?sort=Circulations.DueDate&page=1&pageSize=200")
+                     "account/circulations?sort=Circulations.DueDate&page=1&pageSize=200"),
+  notice = paste0(base_url, "search/notice?noticeNr=")
 )
