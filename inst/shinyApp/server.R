@@ -57,13 +57,19 @@ server <- function(input, output, session) {
       if (!input$show_nonrenewable) {
         table %<>% filter(.data$n_renewal != 2)
       }
-      table
-    },
-    options = list(lengthMenu = c(10, 20, 50, 100),
+      DT::datatable(
+        table,
+        options = list(lengthMenu = c(10, 20, 50, 100),
                    pageLength = 100),
-    rownames = FALSE,
-    colnames = c("Konto", "Exemplar", "Autor", "Titel",
-                 "F\u00e4lligkeit", "Verl.")
+        rownames = FALSE,
+        colnames = c("Konto", "Exemplar", "Autor", "Titel",
+                     "F\u00e4lligkeit", "Verl.")
+      ) %>%
+      DT::formatDate("due_date",
+                     method = "toLocaleDateString",
+                     params = "de-CH")
+    },
+
   )
 
 }
