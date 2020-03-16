@@ -2,7 +2,7 @@
 #'
 #' @docType package
 #'
-#' @importFrom magrittr %>%
+#' @importFrom magrittr %>% %<>%
 #' @importFrom dplyr .data
 #' @keywords internal
 "_PACKAGE"
