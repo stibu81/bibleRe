@@ -40,11 +40,12 @@ server <- function(input, output, session) {
     if (is.null(full_table)) {
       NULL
     } else {
-      table <- filter_document_table(full_table,
-                                     input$due_date,
-                                     input$show_renewable,
-                                     input$show_nonrenewable,
-                                     input$select_account)
+      table <- bibleRe:::filter_document_table(
+        full_table,
+        input$due_date,
+        input$show_renewable,
+        input$show_nonrenewable,
+        input$select_account)
       DT::datatable(
         table,
         options = list(lengthMenu = c(10, 20, 50, 100),
@@ -63,12 +64,13 @@ server <- function(input, output, session) {
   output$download_documents <- downloadHandler(
     filename = "biblere_ausleihen.xlsx",
     content = function(file) {
-      table <- filter_document_table(full_table,
-                                     input$due_date,
-                                     input$show_renewable,
-                                     input$show_nonrenewable,
-                                     input$select_account,
-                                     link_id = FALSE) %>%
+      table <- bibleRe:::filter_document_table(
+          full_table,
+          input$due_date,
+          input$show_renewable,
+          input$show_nonrenewable,
+          input$select_account,
+          link_id = FALSE) %>%
         mutate(due_date = format(due_date, format = "%d.%m.%Y")) %>%
         set_names(c("Konto", "Exemplar", "Autor", "Titel",
                      "F\u00e4lligkeit", "Verl."))
