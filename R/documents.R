@@ -75,6 +75,6 @@ extract_document_links <- function(tab_node) {
     xml2::xml_children() %>%
     xml2::xml_find_first(".//a") %>%
     xml2::xml_attr("href") %>%
-    paste0("http://katalog.iz-region-bern.ch", .)
+    paste0(bib_urls$domain, .)
 
 }
