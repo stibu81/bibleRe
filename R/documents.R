@@ -13,29 +13,13 @@ bib_list_documents <- function(session) {
   page <- rvest::jump_to(session,
                          bib_urls$documents)
 
-  # extract the table
+  # extract the node with the document table
   tab_node <- page %>%
     rvest::html_node(xpath = "//table[@class='table wo-grid-table']")
 
   if (length(tab_node) > 0) {
-    # reformat the table
-    replace_br(tab_node)
-    table <- rvest::html_table(tab_node)
-    table <- table[, names(table) != ""]  %>%
-      dplyr::as_tibble() %>%
-      dplyr::rename(id = "Exemplarnr.",
-                    author_title = "Autor / Titel",
-                    due_date = "F\u00e4lligkeitsdatum",
-                    n_renewal = "Verl\u00e4ngerungen",
-                    renewal_date = "Datum der Verl\u00e4ngerung") %>%
-      tidyr::separate("author_title", c("author", "title"),
-                      "\n", fill = "left") %>%
-      dplyr::mutate(
-        due_date = lubridate::dmy(.data$due_date),
-        renewal_date = lubridate::dmy(.data$renewal_date),
-        author = stringr::str_remove(.data$author, "\\d+-\\d*")
-      ) %>%
-      tidyr::replace_na(list(author = "---", title = "---"))
+    table <- extract_document_table(tab_node) %>%
+              dplyr::mutate(link = extract_document_links(tab_node))
   } else {
     table <- dplyr::tibble(
       id = integer(0),
@@ -43,7 +27,8 @@ bib_list_documents <- function(session) {
       title = character(0),
       due_date = as.Date(character(0)),
       n_renewal = integer(0),
-      renewal_date = as.Date(character(0))
+      renewal_date = as.Date(character(0)),
+      link = character(0)
     )
   }
 
@@ -60,7 +45,36 @@ replace_br <- function(node) {
     xml2::xml_remove()
 }
 
-as_document_link <- function(id) {
-  paste0("<a href=\"", bib_urls$notice, id,
-         "\" target=\"_blank\">", id, "</a>")
+extract_document_table <- function(tab_node) {
+
+  replace_br(tab_node)
+  table <- rvest::html_table(tab_node)
+  table[, names(table) != ""]  %>%
+    dplyr::as_tibble() %>%
+    dplyr::rename(id = "Exemplarnr.",
+                  author_title = "Autor / Titel",
+                  due_date = "F\u00e4lligkeitsdatum",
+                  n_renewal = "Verl\u00e4ngerungen",
+                  renewal_date = "Datum der Verl\u00e4ngerung") %>%
+    tidyr::separate("author_title", c("author", "title"),
+                    "\n", fill = "left") %>%
+    dplyr::mutate(
+      due_date = lubridate::dmy(.data$due_date),
+      renewal_date = lubridate::dmy(.data$renewal_date),
+      author = stringr::str_remove(.data$author, "\\d+-\\d*") %>%
+                stringr::str_trim(),
+      title = stringr::str_trim(.data$title)
+    ) %>%
+    tidyr::replace_na(list(author = "---", title = "---"))
+
+}
+
+extract_document_links <- function(tab_node) {
+
+  xml2::xml_find_first(tab_node, "//tbody") %>%
+    xml2::xml_children() %>%
+    xml2::xml_find_first(".//a") %>%
+    xml2::xml_attr("href") %>%
+    paste0("http://katalog.iz-region-bern.ch", .)
+
 }

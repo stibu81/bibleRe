@@ -58,8 +58,14 @@ filter_document_table <- function(table,
     table %<>% dplyr::filter(.data$account == !!account)
   }
   if (link_id) {
-    table %<>% dplyr::mutate(id = as_document_link(.data$id))
+    table %<>% dplyr::mutate(id = as_link(.data$id, .data$link))
   }
 
-  table
+  dplyr::select(table, -.data$link)
+}
+
+
+as_link <- function(text, link) {
+  paste0("<a href=\"", link, "\" target=\"_blank\">",
+         text, "</a>")
 }

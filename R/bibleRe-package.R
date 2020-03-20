@@ -23,3 +23,5 @@ bib_urls <- dplyr::tibble(
                      "account/circulations?sort=Circulations.DueDate&page=1&pageSize=200"),
   notice = paste0(base_url, "search/notice?noticeNr=")
 )
+
+globalVariables(".")
