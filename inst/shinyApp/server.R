@@ -41,23 +41,35 @@ server <- function(input, output, session) {
       NULL
     } else {
       table <- bibleRe:::filter_document_table(
-        full_table,
-        input$due_date,
-        input$show_renewable,
-        input$show_nonrenewable,
-        input$select_account)
+          full_table,
+          input$due_date,
+          input$show_renewable,
+          input$show_nonrenewable,
+          input$select_account) %>%
+        mutate(due = due_date <= lubridate::today())
       DT::datatable(
         table,
-        options = list(lengthMenu = c(10, 20, 50, 100),
-                   pageLength = 100),
+        options = list(
+          lengthMenu = c(10, 20, 50, 100),
+          pageLength = 100,
+          columnDefs = list(list(visible = FALSE,
+                                 targets = which(names(table) == "due") - 1))
+        ),
         rownames = FALSE,
         colnames = c("Konto", "Exemplar", "Autor", "Titel",
-                     "F\u00e4lligkeit", "Verl."),
+                     "F\u00e4lligkeit", "Verl.", "due"),
         escape = FALSE
       ) %>%
+      # use Swiss format for dates
       DT::formatDate("due_date",
                      method = "toLocaleDateString",
-                     params = "de-CH")
+                     params = "de-CH") %>%
+      # use red text if due date is passed
+      DT::formatStyle(
+        "due",
+        target = "row",
+        color = DT::styleEqual(c(FALSE, TRUE), c("black", "red"))
+      )
     })
 
   # download table
