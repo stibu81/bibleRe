@@ -22,7 +22,9 @@ bib_urls <- dplyr::tibble(
   login = paste0(base_url, "account/login"),
   documents = paste0(base_url,
                      "account/circulations?sort=Circulations.DueDate&page=1&pageSize=200"),
-  notice = paste0(base_url, "search/notice?noticeNr=")
+  notice = paste0(base_url, "search/notice?noticeNr="),
+  search = paste0(base_url,
+                  "search/shortview?searchField=W&searchType=Simple&searchTerm=")
 )
 
 globalVariables(".")

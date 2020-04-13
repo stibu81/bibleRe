@@ -1,5 +1,7 @@
 ui <- fluidPage(
 
+  shinyjs::useShinyjs(),
+
   titlePanel("bibleRe: Zugang zum Webinterface der K\u00f6nizer Bibliotheken"),
 
   sidebarLayout(
@@ -25,6 +27,12 @@ ui <- fluidPage(
                     value = TRUE),
       downloadButton("download_documents",
                      "Liste speichern"),
+      br(), br(),
+      textInput("search",
+                "Katalogsuche:"),
+      actionButton("start_search",
+                   "Suchen",
+                   icon = icon("search")),
       width = 2
     ),
 

@@ -94,4 +94,17 @@ server <- function(input, output, session) {
     }
   )
 
+  # run search
+  observeEvent(input$start_search, {
+    bib_run_search(input$search)
+  })
+
+  # if Enter is pressed while the text input is active
+  # either check or gonext are clicked
+  shinyjs::onevent("keyup", "search", function(e) {
+    if (e$keyCode == 13) {
+        shinyjs::click("start_search")
+    }
+  })
+
 }
