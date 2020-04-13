@@ -52,12 +52,13 @@ server <- function(input, output, session) {
         options = list(
           lengthMenu = c(10, 20, 50, 100),
           pageLength = 100,
-          columnDefs = list(list(visible = FALSE,
-                                 targets = which(names(table) == "due") - 1))
+          columnDefs = list(list(
+            visible = FALSE,
+            targets = which(names(table) %in% c("chk_id", "due")) - 1))
         ),
         rownames = FALSE,
         colnames = c("Konto", "Exemplar", "Autor", "Titel",
-                     "F\u00e4lligkeit", "Verl.", "due"),
+                     "F\u00e4lligkeit", "Verl.", "chk_id", "due"),
         escape = FALSE
       ) %>%
       # use Swiss format for dates
@@ -94,7 +95,7 @@ server <- function(input, output, session) {
     }
   )
 
-    # create search button
+  # create search button
   # this complicated way of doing this was the only solution
   # I found that will not result in the pop-up blocker preventing
   # the tab from opening.

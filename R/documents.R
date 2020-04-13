@@ -19,7 +19,8 @@ bib_list_documents <- function(session) {
 
   if (length(tab_node) > 0) {
     table <- extract_document_table(tab_node) %>%
-              dplyr::mutate(link = extract_document_links(tab_node))
+              dplyr::mutate(link = extract_document_links(tab_node),
+                            chk_id = extract_checkbox_ids(tab_node))
   } else {
     table <- dplyr::tibble(
       id = integer(0),
@@ -77,4 +78,12 @@ extract_document_links <- function(tab_node) {
     xml2::xml_attr("href") %>%
     paste0(bib_urls$domain, .)
 
+}
+
+
+extract_checkbox_ids <- function(tab_node) {
+  xml2::xml_find_first(tab_node, "//tbody") %>%
+    xml2::xml_children() %>%
+    xml2::xml_find_first(".//input[@type='checkbox']") %>%
+    xml2::xml_attr("value")
 }
