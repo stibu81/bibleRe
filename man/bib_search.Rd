@@ -2,12 +2,9 @@
 % Please edit documentation in R/search.R
 \name{bib_search}
 \alias{bib_search}
-\alias{bib_run_search}
 \title{Search the Library Database}
 \usage{
 bib_search(search)
-
-bib_run_search(search)
 }
 \arguments{
 \item{search}{a character giving the search string}
