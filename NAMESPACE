@@ -3,6 +3,7 @@
 export(bib_list_documents)
 export(bib_login)
 export(bib_read_login_data)
+export(bib_renew)
 export(bib_search)
 export(run_biblere)
 importFrom(dplyr,.data)

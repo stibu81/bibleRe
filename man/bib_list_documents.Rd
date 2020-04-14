@@ -7,8 +7,8 @@
 bib_list_documents(session)
 }
 \arguments{
-\item{session}{session object corresponding to a
-login to the library web inerface.}
+\item{session}{a logged in session to the library
+web interface}
 }
 \value{
 a tible containing a table of borrowed documents

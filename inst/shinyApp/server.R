@@ -35,26 +35,33 @@ server <- function(input, output, session) {
         arrange(.data$due_date)
   }
 
-  # table output
-  output$table <- DT::renderDT(
+  filtered_table <- reactive({
     if (is.null(full_table)) {
       NULL
     } else {
-      table <- bibleRe:::filter_document_table(
+      bibleRe:::filter_document_table(
           full_table,
           input$due_date,
           input$show_renewable,
           input$show_nonrenewable,
           input$select_account) %>%
         mutate(due = due_date <= lubridate::today())
+    }
+  })
+
+  # table output
+  output$table <- DT::renderDT(
+    if (is.null(filtered_table())) {
+      NULL
+    } else {
       DT::datatable(
-        table,
+        filtered_table(),
         options = list(
           lengthMenu = c(10, 20, 50, 100),
           pageLength = 100,
           columnDefs = list(list(
             visible = FALSE,
-            targets = which(names(table) %in% c("chk_id", "due")) - 1))
+            targets = which(names(filtered_table()) %in% c("chk_id", "due")) - 1))
         ),
         rownames = FALSE,
         colnames = c("Konto", "Exemplar", "Autor", "Titel",
@@ -112,6 +119,22 @@ server <- function(input, output, session) {
                  "Suche",
                  icon = icon("search"),
                  onclick = script)
+  })
+
+  # renew selected documents
+  observeEvent(input$renew, {
+    selected <- filtered_table()[input$table_rows_selected, ]
+    renew <- filter(selected, n_renewal < 2)
+    renew_accounts <- unique(renew$account)
+    lapply(
+      renew_accounts,
+      function(acc) {
+        chk_ids <- filter(renew, account == acc) %>%
+          pull("chk_id")
+        bib_login(users[[acc]][["username"]],
+                  users[[acc]][["password"]]) %>%
+          bib_renew(chk_ids)
+      })
   })
 
 }

@@ -1,7 +1,7 @@
 #' List Borrowed Documents
 #'
-#' @param session session object corresponding to a
-#'  login to the library web inerface.
+#' @param session a logged in session to the library
+#'  web interface
 #'
 #' @return
 #' a tible containing a table of borrowed documents
