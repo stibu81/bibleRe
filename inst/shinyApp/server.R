@@ -148,4 +148,13 @@ server <- function(input, output, session) {
     }
   })
 
+  # select all / none
+  proxy <- DT::dataTableProxy("table")
+  observeEvent(input$select_all, {
+      DT::selectRows(proxy, input$table_rows_all)
+  })
+  observeEvent(input$select_none, {
+    DT::selectRows(proxy, NULL)
+  })
+
 }

@@ -37,6 +37,9 @@ ui <- fluidPage(
 
     # main panel #####
     mainPanel(
+      div(actionButton("select_all", "Alle auswählen"),
+          actionButton("select_none", "Keine auswählen")),
+      br(), br(),
       DT::DTOutput("table"),
       width = 10
     )
