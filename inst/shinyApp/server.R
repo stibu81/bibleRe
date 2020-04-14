@@ -4,6 +4,8 @@ library(dplyr)
 
 server <- function(input, output, session) {
 
+  state <- reactiveValues(get_docs = 0)
+
   # read the login data and fill menu for user selection
   users <- bib_read_login_data(getOption("biblere_login_data_file"))
   choices <-
@@ -17,29 +19,31 @@ server <- function(input, output, session) {
                     choices = choices,
                     selected = choices[1])
 
-  # get documents if button is clicked
-  if (length(choices) > 1) {
-    message("Getting documents for user(s) ",
-            paste(names(users), collapse = ", "))
-
-    full_table <- lapply(
-          names(users),
-          function(user) {
-            bib_login(users[[user]][["username"]],
-                      users[[user]][["password"]]) %>%
-              bib_list_documents()
-          }) %>%
-        set_names(names(users)) %>%
-        bind_rows(.id = "account") %>%
-        arrange(.data$due_date)
-  }
+  # get documents, if state$get_docs is incremented
+  full_table <- eventReactive(state$get_docs, {
+    if (length(choices) > 1) {
+      message("Getting documents for user(s) ",
+              paste(names(users), collapse = ", "))
+    lapply(names(users),
+            function(user) {
+              bib_login(users[[user]][["username"]],
+                        users[[user]][["password"]]) %>%
+                bib_list_documents()
+            }) %>%
+          set_names(names(users)) %>%
+          bind_rows(.id = "account") %>%
+          arrange(.data$due_date)
+    } else {
+      NULL
+    }
+  })
 
   filtered_table <- reactive({
-    if (is.null(full_table)) {
+    if (is.null(full_table())) {
       NULL
     } else {
       bibleRe:::filter_document_table(
-          full_table,
+          full_table(),
           input$due_date,
           input$show_renewable,
           input$show_nonrenewable,
@@ -86,7 +90,7 @@ server <- function(input, output, session) {
     filename = "biblere_ausleihen.xlsx",
     content = function(file) {
       table <- bibleRe:::filter_document_table(
-          full_table,
+          full_table(),
           input$due_date,
           input$show_renewable,
           input$show_nonrenewable,
@@ -139,6 +143,8 @@ server <- function(input, output, session) {
                     users[[acc]][["password"]]) %>%
             bib_renew(chk_ids)
       })
+      # reload documents
+      state$get_docs <- state$get_docs + 1
     }
   })
 
