@@ -31,7 +31,6 @@ server <- function(input, output, session) {
           }) %>%
         set_names(names(users)) %>%
         bind_rows(.id = "account") %>%
-        select(-"renewal_date") %>%
         arrange(.data$due_date)
   }
 
@@ -54,6 +53,7 @@ server <- function(input, output, session) {
     if (is.null(filtered_table())) {
       NULL
     } else {
+      hide_cols <- c("renewal_date", "chk_id", "due")
       DT::datatable(
         filtered_table(),
         options = list(
@@ -61,11 +61,12 @@ server <- function(input, output, session) {
           pageLength = 100,
           columnDefs = list(list(
             visible = FALSE,
-            targets = which(names(filtered_table()) %in% c("chk_id", "due")) - 1))
+            targets = which(names(filtered_table()) %in% hide_cols) - 1))
         ),
         rownames = FALSE,
         colnames = c("Konto", "Exemplar", "Autor", "Titel",
-                     "F\u00e4lligkeit", "Verl.", "chk_id", "due"),
+                     "F\u00e4lligkeit", "Verl.",
+                     "renewal_date", "chk_id", "due"),
         escape = FALSE
       ) %>%
       # use Swiss format for dates
@@ -124,17 +125,21 @@ server <- function(input, output, session) {
   # renew selected documents
   observeEvent(input$renew, {
     selected <- filtered_table()[input$table_rows_selected, ]
-    renew <- filter(selected, n_renewal < 2)
-    renew_accounts <- unique(renew$account)
-    lapply(
-      renew_accounts,
-      function(acc) {
-        chk_ids <- filter(renew, account == acc) %>%
-          pull("chk_id")
-        bib_login(users[[acc]][["username"]],
-                  users[[acc]][["password"]]) %>%
-          bib_renew(chk_ids)
+    # only renew documents that can be renewd (less than 2 renewals)
+    # that have not already be renewed today
+    renew <- filter(selected, n_renewal < 2, renewal_date != lubridate::today())
+    if (nrow(renew) > 0) {
+      renew_accounts <- unique(renew$account)
+      lapply(
+        renew_accounts,
+        function(acc) {
+          chk_ids <- filter(renew, account == acc) %>%
+            pull("chk_id")
+          bib_login(users[[acc]][["username"]],
+                    users[[acc]][["password"]]) %>%
+            bib_renew(chk_ids)
       })
+    }
   })
 
 }
