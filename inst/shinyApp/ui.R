@@ -32,7 +32,7 @@ ui <- fluidPage(
       textInput("search",
                 "Katalogsuche:"),
       uiOutput("search_button"),
-      width = 2
+      width = 3
     ),
 
     # main panel #####
@@ -41,7 +41,7 @@ ui <- fluidPage(
           actionButton("select_none", "Keine auswählen")),
       br(), br(),
       DT::DTOutput("table"),
-      width = 10
+      width = 9
     )
   )
 )
