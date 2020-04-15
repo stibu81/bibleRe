@@ -157,4 +157,9 @@ server <- function(input, output, session) {
     DT::selectRows(proxy, NULL)
   })
 
+  # stop app when session ends
+  session$onSessionEnded(function() {
+        stopApp()
+    })
+
 }
