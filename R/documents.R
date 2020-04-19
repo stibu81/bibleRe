@@ -29,7 +29,8 @@ bib_list_documents <- function(session) {
       due_date = as.Date(character(0)),
       n_renewal = integer(0),
       renewal_date = as.Date(character(0)),
-      link = character(0)
+      link = character(0),
+      chk_id = character(0)
     )
   }
 

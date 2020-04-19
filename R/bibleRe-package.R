@@ -27,7 +27,8 @@ bib_urls <- dplyr::tibble(
                   "search/shortview?searchField=W&searchType=Simple&searchTerm="),
   renew = paste0(base_url,
                  "account/renew?"),
-  fees = paste0(base_url, "account/fees")
+  fees = paste0(base_url, "account/fees"),
+  orders = paste0(base_url, "account/orders")
 )
 
 globalVariables(".")
