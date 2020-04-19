@@ -4,7 +4,7 @@ library(dplyr)
 
 server <- function(input, output, session) {
 
-  state <- reactiveValues(get_docs = 0)
+  state <- reactiveValues(get_data = 0)
 
   # read the login data and fill menu for user selection
   users <- bib_read_login_data(getOption("biblere_login_data_file"))
@@ -19,19 +19,12 @@ server <- function(input, output, session) {
                     choices = choices,
                     selected = choices[1])
 
-  # get documents, if state$get_docs is incremented
-  full_table <- eventReactive(state$get_docs, {
+  # get documents, if state$get_data is incremented
+  full_table <- eventReactive(state$get_data, {
     if (length(choices) > 1) {
-      message("Getting documents for user(s) ",
+      message("Getting data for user(s) ",
               paste(names(users), collapse = ", "))
-    lapply(names(users),
-            function(user) {
-              bib_login(users[[user]][["username"]],
-                        users[[user]][["password"]]) %>%
-                bib_list_documents()
-            }) %>%
-          set_names(names(users)) %>%
-          bind_rows(.id = "account") %>%
+      bib_get_all_data(users)$documents %>%
           arrange(.data$due_date)
     } else {
       NULL
@@ -144,7 +137,7 @@ server <- function(input, output, session) {
             bib_renew(chk_ids)
       })
       # reload documents
-      state$get_docs <- state$get_docs + 1
+      state$get_data <- state$get_data + 1
     }
   })
 
