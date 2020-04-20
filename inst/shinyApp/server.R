@@ -20,80 +20,48 @@ server <- function(input, output, session) {
                     selected = choices[1])
 
   # get documents, if state$get_data is incremented
-  full_table <- eventReactive(state$get_data, {
+  all_data <- eventReactive(state$get_data, {
     if (length(choices) > 1) {
       message("Getting data for user(s) ",
               paste(names(users), collapse = ", "))
-      bib_get_all_data(users)$documents %>%
-          arrange(.data$due_date)
+      bib_get_all_data(users)
     } else {
       NULL
     }
   })
 
-  filtered_table <- reactive({
-    if (is.null(full_table())) {
+  show_table <- reactive({
+    if (is.null(all_data())) {
       NULL
     } else {
-      bibleRe:::filter_document_table(
-          full_table(),
+      bibleRe:::prepare_table(
+          all_data(),
+          input$select_table,
           input$due_date,
-          input$show_renewable,
-          input$show_nonrenewable,
-          input$select_account) %>%
-        mutate(due = due_date <= lubridate::today())
+          input$select_account)
     }
   })
 
   # table output
   output$table <- DT::renderDT(
-    if (is.null(filtered_table())) {
+    if (is.null(show_table())) {
       NULL
     } else {
-      hide_cols <- c("renewal_date", "chk_id", "due")
-      DT::datatable(
-        filtered_table(),
-        options = list(
-          lengthMenu = c(10, 20, 50, 100),
-          pageLength = 100,
-          columnDefs = list(list(
-            visible = FALSE,
-            targets = which(names(filtered_table()) %in% hide_cols) - 1))
-        ),
-        rownames = FALSE,
-        colnames = c("Konto", "Exemplar", "Autor", "Titel",
-                     "F\u00e4lligkeit", "Verl.",
-                     "renewal_date", "chk_id", "due"),
-        escape = FALSE
-      ) %>%
-      # use Swiss format for dates
-      DT::formatDate("due_date",
-                     method = "toLocaleDateString",
-                     params = "de-CH") %>%
-      # use red text if due date is passed
-      DT::formatStyle(
-        "due",
-        target = "row",
-        color = DT::styleEqual(c(FALSE, TRUE), c("black", "red"))
-      )
+      bibleRe:::create_datatable(show_table(), input$select_table)
     })
 
   # download table
   output$download_documents <- downloadHandler(
-    filename = "biblere_ausleihen.xlsx",
+    filename = function() {
+      paste0("biblere_",
+             tolower(bibleRe:::get_table_name(input$select_table)),
+             ".xlsx")
+    },
     content = function(file) {
-      table <- bibleRe:::filter_document_table(
-          full_table(),
-          input$due_date,
-          input$show_renewable,
-          input$show_nonrenewable,
-          input$select_account,
-          link_id = FALSE) %>%
-        mutate(due_date = format(due_date, format = "%d.%m.%Y")) %>%
-        set_names(c("Konto", "Exemplar", "Autor", "Titel",
-                     "F\u00e4lligkeit", "Verl."))
-      WriteXLS::WriteXLS(table, file,
-                         SheetNames = "Ausleihen",
+      bibleRe:::create_export_table(show_table(),
+                                    input$select_table) %>%
+      WriteXLS::WriteXLS(file,
+                         SheetNames = bibleRe::get_table_name(input$select_table),
                          AdjWidth = TRUE,
                          BoldHeaderRow = TRUE,
                          FreezeRow = 1)
@@ -121,23 +89,26 @@ server <- function(input, output, session) {
 
   # renew selected documents
   observeEvent(input$renew, {
-    selected <- filtered_table()[input$table_rows_selected, ]
-    # only renew documents that can be renewd (less than 2 renewals)
-    # that have not already be renewed today
-    renew <- filter(selected, n_renewal < 2, renewal_date != lubridate::today())
-    if (nrow(renew) > 0) {
-      renew_accounts <- unique(renew$account)
-      lapply(
-        renew_accounts,
-        function(acc) {
-          chk_ids <- filter(renew, account == acc) %>%
-            pull("chk_id")
-          bib_login(users[[acc]][["username"]],
-                    users[[acc]][["password"]]) %>%
-            bib_renew(chk_ids)
-      })
-      # reload documents
-      state$get_data <- state$get_data + 1
+    if (input$select_table == "documents") {
+      selected <- show_table()[input$table_rows_selected, ]
+      # only renew documents that can be renewd (less than 2 renewals)
+      # that have not already be renewed today
+      renew <- filter(selected, n_renewal < 2, renewal_date != lubridate::today())
+      if (nrow(renew) > 0) {
+        message("Renewing ", paste(renew$title, collapse = "; "))
+        renew_accounts <- unique(renew$account)
+        lapply(
+          renew_accounts,
+          function(acc) {
+            chk_ids <- filter(renew, account == acc) %>%
+              pull("chk_id")
+            bib_login(users[[acc]][["username"]],
+                      users[[acc]][["password"]]) %>%
+              bib_renew(chk_ids)
+        })
+        # reload documents
+        state$get_data <- state$get_data + 1
+      }
     }
   })
 

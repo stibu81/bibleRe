@@ -39,33 +39,143 @@ run_biblere <- function(login_data_file = "~/.biblere_passwords",
 }
 
 
-# Helper function to filter the documents table
-filter_document_table <- function(table,
-                                  due_date,
-                                  show_renewable,
-                                  show_nonrenewable,
-                                  account,
-                                  link_id = TRUE) {
+# Helper function to extract a table from the complete data
+prepare_table <- function(data,
+                          type = c("documents", "orders", "fees"),
+                          due_date = as.Date("2100-01-01"),
+                          account = "alle") {
 
-  table %<>% dplyr::filter(.data$due_date <= !!due_date)
-  if (!show_renewable) {
-    table %<>% dplyr::filter(.data$n_renewal == 2)
+  type <- match.arg(type)
+
+  # extract the table from the data
+  table <- data[[type]]
+
+  # only table of documents is ordered by and filtered for due_date
+  if (type == "documents") {
+    table %<>% dplyr::filter(.data$due_date <= !!due_date) %>%
+      dplyr::arrange(.data$due_date) %>%
+      dplyr::mutate(due = .data$due_date <= lubridate::today())
   }
-  if (!show_nonrenewable) {
-    table %<>% dplyr::filter(.data$n_renewal != 2)
-  }
+
   if (account != "alle") {
     table %<>% dplyr::filter(.data$account == !!account)
   }
-  if (link_id) {
-    table %<>% dplyr::mutate(id = as_link(.data$id, .data$link))
+
+  # convert document id to link
+  if (type %in%  c("documents", "orders")) {
+    table %<>% dplyr::mutate(id = as_link(.data$id, .data$link)) %>%
+      dplyr::select(-.data$link)
   }
 
-  dplyr::select(table, -.data$link)
+  table
+
 }
 
 
 as_link <- function(text, link) {
   paste0("<a href=\"", link, "\" target=\"_blank\">",
          text, "</a>")
+}
+
+
+# create datatable with DT
+create_datatable <- function(table,
+                             type = c("documents", "orders", "fees")) {
+
+  type <- match.arg(type)
+
+  hide_cols <- get_hidden_cols(type)
+  col_names <- get_col_names(type)
+  date_cols <- stringr::str_subset(names(table), "date")
+
+  data_table <-
+    DT::datatable(
+      table,
+      options = list(
+        lengthMenu = c(10, 20, 50, 100),
+        pageLength = 100,
+        columnDefs = list(list(
+          visible = FALSE,
+          targets = which(names(table) %in% hide_cols) - 1))
+      ),
+      rownames = FALSE,
+      colnames = col_names,
+      escape = FALSE
+    ) %>%
+    # use Swiss format for dates
+    DT::formatDate(date_cols,
+                   method = "toLocaleDateString",
+                   params = "de-CH")
+
+  # only for documents: use red text if due date is passed
+  if (type == "documents") {
+    data_table %<>% DT::formatStyle(
+      "due",
+      target = "row",
+      color = DT::styleEqual(c(FALSE, TRUE), c("black", "red"))
+    )
+  }
+
+  data_table
+
+}
+
+
+# helper function to create table for export
+create_export_table <- function(table,
+                                type = c("documents", "orders", "fees")) {
+
+  type <- match.arg(type)
+
+  hide_cols <- get_hidden_cols(type)
+  col_names <- get_col_names(type)
+  date_cols <- stringr::str_subset(names(table), "date")
+
+  # if there is a column id, remove the link
+  if ("id" %in% names(table)) {
+    table %<>% dplyr::mutate(
+      id = stringr::str_remove_all(.data$id, "<[^>]*>")
+    )
+  }
+
+  # convert dates, rename columns
+  table %<>%
+    dplyr::mutate_at(date_cols,
+                     ~format(., format = "%d.%m.%Y")) %>%
+    magrittr::set_names(col_names)
+
+  # remove hidden columns
+  table <- table[, !names(table) %in% hide_cols]
+
+  table
+
+}
+
+
+# helper function to get hidden columns and german column names
+# for each table type
+get_hidden_cols <- function(type) {
+  hidden_cols <- list(documents = c("renewal_date", "chk_id", "due"),
+                      orders = c(),
+                      fees = c())
+  hidden_cols[[type]]
+}
+
+
+get_col_names <- function(type) {
+  col_names <- list(documents = c("Konto", "Exemplar", "Autor", "Titel",
+                                  "F\u00e4lligkeit", "Verl.",
+                                  "renewal_date", "chk_id", "due"),
+                    orders = c("Konto", "Exemplar", "Autor", "Titel",
+                               "Typ", "Bestelldatum"),
+                    fees = c("Konto", "Typ", "Datum", "Betrag",
+                             "Exemplar", "Notiz"))
+  col_names[[type]]
+}
+
+get_table_name <- function(type) {
+  table_names <- list(documents = "Ausleihen",
+                      orders = "Reservationen",
+                      fees = "Geb\u00fchren")
+  table_names[[type]]
 }

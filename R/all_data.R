@@ -15,7 +15,7 @@ bib_get_all_data <- function(users) {
     magrittr::set_names(names(users))
 
   list(documents = bind_bib_data(all_data, "documents"),
-       orders = bind_bib_data(all_data, "oders"),
+       orders = bind_bib_data(all_data, "orders"),
        fees = bind_bib_data(all_data, "fees"))
 }
 
