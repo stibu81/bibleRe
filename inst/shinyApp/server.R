@@ -61,7 +61,7 @@ server <- function(input, output, session) {
       bibleRe:::create_export_table(show_table(),
                                     input$select_table) %>%
       WriteXLS::WriteXLS(file,
-                         SheetNames = bibleRe::get_table_name(input$select_table),
+                         SheetNames = bibleRe:::get_table_name(input$select_table),
                          AdjWidth = TRUE,
                          BoldHeaderRow = TRUE,
                          FreezeRow = 1)
