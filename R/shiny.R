@@ -107,6 +107,14 @@ create_datatable <- function(table,
                    method = "toLocaleDateString",
                    params = "de-CH")
 
+  # only for fees: format column amount as currency
+  if (type == "fees") {
+    data_table %<>% DT::formatCurrency("amount",
+                                       currency = " CHF",
+                                       mark = "'",
+                                       before = FALSE)
+  }
+
   # only for documents: use red text if due date is passed
   if (type == "documents") {
     data_table %<>% DT::formatStyle(
