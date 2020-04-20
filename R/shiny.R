@@ -167,9 +167,9 @@ get_col_names <- function(type) {
                                   "F\u00e4lligkeit", "Verl.",
                                   "renewal_date", "chk_id", "due"),
                     orders = c("Konto", "Exemplar", "Autor", "Titel",
-                               "Typ", "Bestelldatum"),
-                    fees = c("Konto", "Typ", "Datum", "Betrag",
-                             "Exemplar", "Notiz"))
+                               "Abholart", "Bestelldatum"),
+                    fees = c("Konto", "Art der Geb\u00fchr", "Datum",
+                             "Betrag", "Exemplar", "Notiz"))
   col_names[[type]]
 }
 
