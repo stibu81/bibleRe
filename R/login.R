@@ -22,16 +22,22 @@
 
 bib_login <- function(username, password) {
 
-  url <- "http://katalog.iz-region-bern.ch/WebOPAC-Koeniz/account/login?returnUrl=%2FWebOPAC-Koeniz%2Faccount%2F"
-
-  session <- rvest::html_session(url)
+  session <- rvest::html_session(bib_urls$login)
   form <- rvest::html_form(session)[[2]]
   filled_form <- rvest::set_values(form,
                                    Username = username,
                                    Password = password)
-  rvest::submit_form(session,
-                     filled_form,
-                     "<unnamed>")
+  session <- rvest::submit_form(session,
+                                filled_form,
+                                "<unnamed>")
+
+  # if the urls associated with the session is still the same,
+  # login has not worked. => issue a warning
+  if (session$url == bib_urls$login) {
+    warning("login failed!")
+  }
+
+  session
 
 }
 
