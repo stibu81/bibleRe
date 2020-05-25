@@ -105,7 +105,9 @@ server <- function(input, output, session) {
       selected <- show_table()[input$table_rows_selected, ]
       # only renew documents that can be renewd (less than 2 renewals)
       # that have not already be renewed today
-      renew <- filter(selected, n_renewal < 2, renewal_date != lubridate::today())
+      renew <- filter(selected,
+                      n_renewal < 2,
+                      is.na(renewal_date) | renewal_date != lubridate::today())
       if (nrow(renew) > 0) {
         message("Renewing ", paste(renew$title, collapse = "; "))
         renew_accounts <- unique(renew$account)
@@ -120,6 +122,8 @@ server <- function(input, output, session) {
         })
         # reload documents
         state$get_data <- state$get_data + 1
+      } else {
+        message("no documents to renew")
       }
     }
   })
