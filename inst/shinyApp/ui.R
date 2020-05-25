@@ -5,10 +5,18 @@ ui <- fluidPage(
   sidebarLayout(
     # Sidebar with inputs ######
     sidebarPanel(
-      selectInput(
-        "select_account",
-        "Konto auswählen:",
-        "laden ..."),
+      tags$p(tags$b("Konto auswählen:")),
+      fluidRow(
+        column(8,
+          selectInput(
+            "select_account",
+            label = NULL,
+            "laden ...")),
+        column(4,
+          actionButton("reload",
+                       label = NULL,
+                       icon = icon("redo")))
+      ),
       tags$p(tags$b("Rückgabe bis:")),
       fluidRow(
         column(8,

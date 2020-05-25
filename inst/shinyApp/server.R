@@ -14,14 +14,14 @@ server <- function(input, output, session) {
     } else {
       c("alle", names(users))
     }
-  updateSelectInput(session,
-                    "select_account",
-                    choices = choices,
-                    selected = choices[1])
 
   # get documents, if state$get_data is incremented
   all_data <- eventReactive(state$get_data, {
     if (length(choices) > 1) {
+      updateSelectInput(session,
+                        "select_account",
+                        choices = choices,
+                        selected = choices[1])
       message("Getting data for user(s) ",
               paste(names(users), collapse = ", "))
       bib_get_all_data(users)
@@ -135,6 +135,11 @@ server <- function(input, output, session) {
   })
   observeEvent(input$select_none, {
     DT::selectRows(proxy, NULL)
+  })
+
+  # reload button
+  observeEvent(input$reload, {
+    state$get_data <- state$get_data + 1
   })
 
   # stop app when session ends
