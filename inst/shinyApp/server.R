@@ -68,6 +68,18 @@ server <- function(input, output, session) {
     }
   )
 
+  # show all documents
+  observeEvent(input$show_all_dates, {
+    max_date <- bibleRe:::prepare_table(
+          all_data(),
+          "documents") %>%
+      pull("due_date") %>%
+      max()
+    updateDateInput(session,
+                    "due_date",
+                    value = max_date)
+  })
+
   # create search button
   # this complicated way of doing this was the only solution
   # I found that will not result in the pop-up blocker preventing
