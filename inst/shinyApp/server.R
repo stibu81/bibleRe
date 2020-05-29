@@ -14,14 +14,14 @@ server <- function(input, output, session) {
     } else {
       c("alle", names(users))
     }
-  updateSelectInput(session,
-                    "select_account",
-                    choices = choices,
-                    selected = choices[1])
 
   # get documents, if state$get_data is incremented
   all_data <- eventReactive(state$get_data, {
     if (length(choices) > 1) {
+      updateSelectInput(session,
+                        "select_account",
+                        choices = choices,
+                        selected = choices[1])
       message("Getting data for user(s) ",
               paste(names(users), collapse = ", "))
       bib_get_all_data(users)
@@ -68,6 +68,18 @@ server <- function(input, output, session) {
     }
   )
 
+  # show all documents
+  observeEvent(input$show_all_dates, {
+    max_date <- bibleRe:::prepare_table(
+          all_data(),
+          "documents") %>%
+      pull("due_date") %>%
+      max()
+    updateDateInput(session,
+                    "due_date",
+                    value = max_date)
+  })
+
   # create search button
   # this complicated way of doing this was the only solution
   # I found that will not result in the pop-up blocker preventing
@@ -93,7 +105,9 @@ server <- function(input, output, session) {
       selected <- show_table()[input$table_rows_selected, ]
       # only renew documents that can be renewd (less than 2 renewals)
       # that have not already be renewed today
-      renew <- filter(selected, n_renewal < 2, renewal_date != lubridate::today())
+      renew <- filter(selected,
+                      n_renewal < 2,
+                      is.na(renewal_date) | renewal_date != lubridate::today())
       if (nrow(renew) > 0) {
         message("Renewing ", paste(renew$title, collapse = "; "))
         renew_accounts <- unique(renew$account)
@@ -108,6 +122,8 @@ server <- function(input, output, session) {
         })
         # reload documents
         state$get_data <- state$get_data + 1
+      } else {
+        message("no documents to renew")
       }
     }
   })
@@ -119,6 +135,11 @@ server <- function(input, output, session) {
   })
   observeEvent(input$select_none, {
     DT::selectRows(proxy, NULL)
+  })
+
+  # reload button
+  observeEvent(input$reload, {
+    state$get_data <- state$get_data + 1
   })
 
   # stop app when session ends
