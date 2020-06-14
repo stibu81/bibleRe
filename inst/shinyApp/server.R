@@ -48,7 +48,7 @@ server <- function(input, output, session) {
       NULL
     } else {
       bibleRe:::create_datatable(show_table(), input$select_table)
-    })
+    }, server = FALSE)
 
   # download table
   output$download_documents <- downloadHandler(

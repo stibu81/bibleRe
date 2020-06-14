@@ -91,12 +91,23 @@ create_datatable <- function(table,
   data_table <-
     DT::datatable(
       table,
+      extensions = c("Select", "Buttons"),
+      selection = "none",
       options = list(
-        lengthMenu = c(10, 20, 50, 100),
-        pageLength = 100,
+        pageLength = 200,
         columnDefs = list(list(
           visible = FALSE,
-          targets = which(names(table) %in% hide_cols) - 1))
+          targets = which(names(table) %in% hide_cols) - 1)),
+        dom = "Bfti",
+        language  = list(
+          search = "Suche:",
+          buttons = list(
+            selectAll = "Alle ausw\u00e4hlen",
+            selectNone = "Keine ausw\u00e4hlen"
+          )
+        ),
+        buttons = c("selectAll", "selectNone"),
+        select = list(style = "multi")
       ),
       rownames = FALSE,
       colnames = col_names,
