@@ -101,9 +101,20 @@ create_datatable <- function(table,
         dom = "Bfti",
         language  = list(
           search = "Suche:",
+          emptyTable = "Es sind keine Daten verf\u00fcgbar.",
+          info = "_TOTAL_ Eintr\u00e4ge",
+          infoEmpty = "0 Eintr\u00e4ge",
+          infoFiltered = "(gefiltert aus _MAX_ Eintr\u00e4gen)",
+          zeroRecords = "keine passenden Eintr\u00e4ge gefunden",
           buttons = list(
             selectAll = "Alle ausw\u00e4hlen",
             selectNone = "Keine ausw\u00e4hlen"
+          ),
+          select = list(
+            rows = list(
+              "_" = "%d Eintr\u00e4ge ausgew\u00e4hlt",
+              "1" = "1 Eintrag ausgew\u00e4hlt",
+              "0" = "")
           )
         ),
         buttons = c("selectAll", "selectNone"),
