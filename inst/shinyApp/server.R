@@ -18,13 +18,20 @@ server <- function(input, output, session) {
   # get documents, if state$get_data is incremented
   all_data <- eventReactive(state$get_data, {
     if (length(choices) > 1) {
+      data <- bib_get_all_data(users)
+      counts <- c(nrow(data$documents),
+                  vapply(names(users),
+                         function(u) sum(data$documents$account == u),
+                         integer(1))
+                  )
+      names(choices) <- paste0(choices, " (", counts, ")")
       updateSelectInput(session,
                         "select_account",
                         choices = choices,
                         selected = choices[1])
       message("Getting data for user(s) ",
               paste(names(users), collapse = ", "))
-      bib_get_all_data(users)
+      data
     } else {
       NULL
     }
@@ -48,7 +55,7 @@ server <- function(input, output, session) {
       NULL
     } else {
       bibleRe:::create_datatable(show_table(), input$select_table)
-    })
+    }, server = FALSE)
 
   # download table
   output$download_documents <- downloadHandler(

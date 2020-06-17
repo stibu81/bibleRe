@@ -38,12 +38,10 @@ ui <- fluidPage(
                                Reservationen = "orders",
                                Gebühren = "fees")),
       tags$p(
-        downloadButton("download_documents",
-                       "Tabelle speichern")
-      ),
-      tags$p(
         actionButton("renew", "Verlängern",
-                     icon = icon("redo"))
+                     icon = icon("redo")),
+        downloadButton("download_documents",
+                       "Speichern")
       ),
       textInput("search",
                 "Katalogsuche:"),
@@ -53,8 +51,6 @@ ui <- fluidPage(
 
     # main panel #####
     mainPanel(
-      tags$p(actionButton("select_all", "Alle auswählen"),
-             actionButton("select_none", "Keine auswählen")),
       DT::DTOutput("table"),
       width = 9
     )
