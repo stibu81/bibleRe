@@ -38,12 +38,10 @@ ui <- fluidPage(
                                Reservationen = "orders",
                                Gebühren = "fees")),
       tags$p(
-        downloadButton("download_documents",
-                       "Tabelle speichern")
-      ),
-      tags$p(
         actionButton("renew", "Verlängern",
-                     icon = icon("redo"))
+                     icon = icon("redo")),
+        downloadButton("download_documents",
+                       "Speichern")
       ),
       textInput("search",
                 "Katalogsuche:"),
