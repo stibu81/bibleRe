@@ -209,3 +209,69 @@ get_table_name <- function(type) {
                       fees = "Geb\u00fchren")
   table_names[[type]]
 }
+
+
+# Show a dialog for confirmation of renewal
+# renew is the table of documents to be renewed
+renewal_dialog <- function(renew) {
+
+  n <- nrow(renew)
+
+  # dialog if there are documents
+  if (n > 0) {
+    # this container should hide the headers, but it does not
+    # work in the app
+    dt_container <- shiny::tags$table(
+      class = "display",
+      shiny::tags$thead(
+        # see https://stackoverflow.com/a/44794144/4303162
+        style = "display:none;"
+      )
+    )
+
+    dt <- dplyr::select(renew, .data$author, .data$title, .data$due_date) %>%
+      DT::datatable(
+        rownames = FALSE,
+        colnames = c("Autor", "Titel", "F\u00e4lligkeit"),
+        #container = dt_container,
+        selection = "none",
+        options = list(
+          dom = "t",
+          scrollY = "300px",
+          scrollCollapse = TRUE,
+          paging = FALSE
+        )
+      ) %>%
+      # use Swiss format for dates
+      DT::formatDate("due_date",
+                     method = "toLocaleDateString",
+                     params = "de-CH")
+
+    text <- if (n == 1) {
+      "Sollen folgendes Dokument verl\u00e4ngert werden?"
+    } else {
+      paste("Sollen folgende", nrow(renew), "Dokumente verl\u00e4ngert werden?")
+    }
+
+    dialog <- shiny::modalDialog(
+      text, DT::renderDT(dt),
+      title = "Verl\u00e4ngerung",
+      footer = shiny::tagList(
+        shiny::actionButton("confirmRenew", "OK"),
+        shiny::modalButton("Abbrechen")),
+      size = "l",
+      easyClose = TRUE
+    )
+
+  # dialog if there are now documents to renew
+  } else {
+    dialog <- shiny::modalDialog(
+      paste("Es wurden keine verl\u00e4ngerbaren Dokumente ausgew\u00e4hlt."),
+      title = "Verl\u00e4ngerung",
+      footer = shiny::modalButton("Abbrechen"),
+      easyClose = TRUE
+    )
+  }
+
+  shiny::showModal(dialog)
+}

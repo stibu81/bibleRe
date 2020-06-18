@@ -4,7 +4,8 @@ library(dplyr)
 
 server <- function(input, output, session) {
 
-  state <- reactiveValues(get_data = 0)
+  state <- reactiveValues(get_data = 0,
+                          renew = NULL)
 
   # read the login data and fill menu for user selection
   users <- bib_read_login_data(getOption("biblere_login_data_file"))
@@ -110,38 +111,34 @@ server <- function(input, output, session) {
   observeEvent(input$renew, {
     if (input$select_table == "documents") {
       selected <- show_table()[input$table_rows_selected, ]
-      # only renew documents that can be renewd (less than 2 renewals)
+      # only renew documents that can be renewed (less than 2 renewals)
       # that have not already be renewed today
-      renew <- filter(selected,
-                      n_renewal < 2,
-                      is.na(renewal_date) | renewal_date != lubridate::today())
-      if (nrow(renew) > 0) {
-        message("Renewing ", paste(renew$title, collapse = "; "))
-        renew_accounts <- unique(renew$account)
-        lapply(
-          renew_accounts,
-          function(acc) {
-            chk_ids <- filter(renew, account == acc) %>%
-              pull("chk_id")
-            bib_login(users[[acc]][["username"]],
-                      users[[acc]][["password"]]) %>%
-              bib_renew(chk_ids)
-        })
-        # reload documents
-        state$get_data <- state$get_data + 1
-      } else {
-        message("no documents to renew")
-      }
+      state$renew <- filter(
+        selected,
+        n_renewal < 2,
+        is.na(renewal_date) | renewal_date != lubridate::today())
+      bibleRe:::renewal_dialog(state$renew)
+      state$renew <- NULL
     }
   })
 
-  # select all / none
-  proxy <- DT::dataTableProxy("table")
-  observeEvent(input$select_all, {
-      DT::selectRows(proxy, input$table_rows_all)
-  })
-  observeEvent(input$select_none, {
-    DT::selectRows(proxy, NULL)
+  # renew if OK button is pressed in dialog
+  observeEvent(input$confirmRenew, {
+    removeModal()
+    message("Renewing ", paste(state$renew$title, collapse = "; "))
+    renew_accounts <- unique(state$renew$account)
+    lapply(
+      renew_accounts,
+      function(acc) {
+        chk_ids <- filter(state$renew, account == acc) %>%
+          pull("chk_id")
+        bib_login(users[[acc]][["username"]],
+                  users[[acc]][["password"]]) %>%
+          bib_renew(chk_ids)
+      })
+    # reload documents
+    state$get_data <- state$get_data + 1
+    state$renew <- NULL
   })
 
   # reload button
