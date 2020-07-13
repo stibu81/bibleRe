@@ -117,7 +117,8 @@ server <- function(input, output, session) {
         selected,
         n_renewal < 2,
         is.na(renewal_date) | renewal_date != lubridate::today())
-      bibleRe:::renewal_dialog(state$renew)
+      bibleRe:::renewal_dialog(state$renew,
+                               n_selected = nrow(selected))
       state$renew <- NULL
     }
   })

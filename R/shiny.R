@@ -213,7 +213,7 @@ get_table_name <- function(type) {
 
 # Show a dialog for confirmation of renewal
 # renew is the table of documents to be renewed
-renewal_dialog <- function(renew) {
+renewal_dialog <- function(renew, n_selected) {
 
   n <- nrow(renew)
 
@@ -247,14 +247,23 @@ renewal_dialog <- function(renew) {
                      method = "toLocaleDateString",
                      params = "de-CH")
 
-    text <- if (n == 1) {
-      "Sollen folgendes Dokument verl\u00e4ngert werden?"
+    # if n_selected is given and some documents are not renewable,
+    # add a message.
+    text1 <- if (!is.null(n_selected) && n_selected != n) {
+      shiny::tags$p(
+        paste(n_selected - n,
+              "der ausgew\u00e4hlten Dokumente k\u00f6nnen",
+              "nicht verl\u00e4ngert werden.")
+      )
+    }
+    text2 <- if (n == 1) {
+      "Soll folgendes Dokument verl\u00e4ngert werden?"
     } else {
       paste("Sollen folgende", nrow(renew), "Dokumente verl\u00e4ngert werden?")
     }
 
     dialog <- shiny::modalDialog(
-      text, DT::renderDT(dt),
+      text1, text2, DT::renderDT(dt),
       title = "Verl\u00e4ngerung",
       footer = shiny::tagList(
         shiny::actionButton("confirmRenew", "OK"),
