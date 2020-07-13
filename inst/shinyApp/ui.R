@@ -1,5 +1,7 @@
 ui <- fluidPage(
 
+  theme = shinythemes::shinytheme("lumen"),
+
   titlePanel("bibleRe: Zugang zum Webinterface der K\u00f6nizer Bibliotheken"),
 
   sidebarLayout(
@@ -15,7 +17,8 @@ ui <- fluidPage(
         column(4,
           actionButton("reload",
                        label = NULL,
-                       icon = icon("redo")))
+                       icon = icon("redo"),
+                       class = "btn btn-primary"))
       ),
       tags$p(tags$b("Rückgabe bis:")),
       fluidRow(
@@ -30,7 +33,8 @@ ui <- fluidPage(
             language = "de",
             weekstart = 1)),
       column(4,
-        actionButton("show_all_dates", "alle"))
+        actionButton("show_all_dates", "alle",
+                     class = "btn btn-primary"))
       ),
       radioButtons("select_table",
                    "Tabelle auswählen",
@@ -39,9 +43,11 @@ ui <- fluidPage(
                                Gebühren = "fees")),
       tags$p(
         actionButton("renew", "Verlängern",
-                     icon = icon("redo")),
+                     icon = icon("redo"),
+                     class = "btn btn-primary"),
         downloadButton("download_documents",
-                       "Speichern")
+                       "Speichern",
+                       class = "btn btn-primary")
       ),
       textInput("search",
                 "Katalogsuche:"),

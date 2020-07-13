@@ -104,6 +104,7 @@ server <- function(input, output, session) {
     actionButton("start_search",
                  "Suche",
                  icon = icon("search"),
+                 class = "btn btn-primary",
                  onclick = script)
   })
 

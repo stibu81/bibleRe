@@ -117,7 +117,10 @@ create_datatable <- function(table,
               "0" = "")
           )
         ),
-        buttons = c("selectAll", "selectNone"),
+        buttons = list(
+          list(extend = "selectAll", className = "btn btn-primary"),
+          list(extend = "selectNone", className = "btn btn-primary")
+        ),
         select = list(style = "multi")
       ),
       rownames = FALSE,
