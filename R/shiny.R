@@ -100,7 +100,7 @@ create_datatable <- function(table,
           targets = which(names(table) %in% hide_cols) - 1)),
         dom = "Bfti",
         language  = list(
-          search = "Suche:",
+          search = "<b>Suche:</b>",
           emptyTable = "Es sind keine Daten verf\u00fcgbar.",
           info = "_TOTAL_ Eintr\u00e4ge",
           infoEmpty = "0 Eintr\u00e4ge",
@@ -117,8 +117,22 @@ create_datatable <- function(table,
               "0" = "")
           )
         ),
-        buttons = c("selectAll", "selectNone"),
-        select = list(style = "multi")
+        buttons = list(
+          list(extend = "selectAll", className = "btn btn-primary"),
+          list(extend = "selectNone", className = "btn btn-primary")
+        ),
+        select = list(style = "multi"),
+        # in order for the bootstrapping theme to work correctly for the
+        # DT-buttons, the class dt-button must be removed.
+        # see answer by Stéphane Laurent, https://stackoverflow.com/a/62904879/4303162
+        # This line is licenced under
+        # CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/).
+        # Modified to also change class of search field.
+        initComplete = DT::JS(
+          "function() {",
+            "$('.dt-buttons button').removeClass('dt-button');",
+            "$('div.dataTables_filter input').addClass('form-control');",
+          "}")
       ),
       rownames = FALSE,
       colnames = col_names,
@@ -266,8 +280,10 @@ renewal_dialog <- function(renew, n_selected) {
       text1, text2, DT::renderDT(dt),
       title = "Verl\u00e4ngerung",
       footer = shiny::tagList(
-        shiny::actionButton("confirmRenew", "OK"),
-        shiny::modalButton("Abbrechen")),
+        shiny::actionButton("confirmRenew", "OK",
+                            class = "btn btn-primary"),
+        shiny::modalButton("Abbrechen") %>%
+          shiny::tagAppendAttributes(class = "btn btn-primary")),
       size = "l",
       easyClose = TRUE
     )
@@ -277,7 +293,8 @@ renewal_dialog <- function(renew, n_selected) {
     dialog <- shiny::modalDialog(
       paste("Es wurden keine verl\u00e4ngerbaren Dokumente ausgew\u00e4hlt."),
       title = "Verl\u00e4ngerung",
-      footer = shiny::modalButton("Abbrechen"),
+      footer = shiny::modalButton("Abbrechen") %>%
+        shiny::tagAppendAttributes(class = "btn btn-primary"),
       easyClose = TRUE
     )
   }
