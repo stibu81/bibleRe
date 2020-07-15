@@ -32,6 +32,15 @@ server <- function(input, output, session) {
                         selected = choices[1])
       message("Getting data for user(s) ",
               paste(names(users), collapse = ", "))
+
+      # if this is a reload after a renewal, check that renewal
+      # was successful by checking that all the renewed documents
+      # have renewal date today.
+      if (!is.null(state$renew)) {
+        bibleRe:::warn_failed_renewal(data$documents, state$renew)
+        state$renew <- NULL
+      }
+
       data
     } else {
       NULL
@@ -120,7 +129,6 @@ server <- function(input, output, session) {
         is.na(renewal_date) | renewal_date != lubridate::today())
       bibleRe:::renewal_dialog(state$renew,
                                n_selected = nrow(selected))
-      state$renew <- NULL
     }
   })
 
@@ -140,7 +148,6 @@ server <- function(input, output, session) {
       })
     # reload documents
     state$get_data <- state$get_data + 1
-    state$renew <- NULL
   })
 
   # reload button

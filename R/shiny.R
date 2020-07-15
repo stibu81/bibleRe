@@ -233,33 +233,6 @@ renewal_dialog <- function(renew, n_selected) {
 
   # dialog if there are documents
   if (n > 0) {
-    # this container should hide the headers, but it does not
-    # work in the app
-    dt_container <- shiny::tags$table(
-      class = "display",
-      shiny::tags$thead(
-        # see https://stackoverflow.com/a/44794144/4303162
-        style = "display:none;"
-      )
-    )
-
-    dt <- dplyr::select(renew, .data$author, .data$title, .data$due_date) %>%
-      DT::datatable(
-        rownames = FALSE,
-        colnames = c("Autor", "Titel", "F\u00e4lligkeit"),
-        #container = dt_container,
-        selection = "none",
-        options = list(
-          dom = "t",
-          scrollY = "300px",
-          scrollCollapse = TRUE,
-          paging = FALSE
-        )
-      ) %>%
-      # use Swiss format for dates
-      DT::formatDate("due_date",
-                     method = "toLocaleDateString",
-                     params = "de-CH")
 
     # if n_selected is given and some documents are not renewable,
     # add a message.
@@ -277,7 +250,7 @@ renewal_dialog <- function(renew, n_selected) {
     }
 
     dialog <- shiny::modalDialog(
-      text1, text2, DT::renderDT(dt),
+      text1, text2, DT::renderDT(create_renewal_dt(renew)),
       title = "Verl\u00e4ngerung",
       footer = shiny::tagList(
         shiny::actionButton("confirmRenew", "OK",
@@ -293,11 +266,57 @@ renewal_dialog <- function(renew, n_selected) {
     dialog <- shiny::modalDialog(
       paste("Es wurden keine verl\u00e4ngerbaren Dokumente ausgew\u00e4hlt."),
       title = "Verl\u00e4ngerung",
-      footer = shiny::modalButton("Abbrechen") %>%
+      footer = shiny::modalButton("OK") %>%
         shiny::tagAppendAttributes(class = "btn btn-primary"),
       easyClose = TRUE
     )
   }
 
   shiny::showModal(dialog)
+}
+
+
+# dialog to indicate that renewal failed
+warn_failed_renewal <- function(documents, renew) {
+
+  failed <- dplyr::filter(documents,
+                          .data$chk_id %in% renew$chk_id,
+                          .data$renewal_date != lubridate::today())
+
+  if (nrow(failed) > 0) {
+
+    dialog <- shiny::modalDialog(
+      "Folgende Dokumente konnten nicht verl\u00e4ngert werden:",
+      DT::renderDT(create_renewal_dt(failed)),
+      title = "Verl\u00e4ngerung",
+      footer = shiny::modalButton("OK") %>%
+          shiny::tagAppendAttributes(class = "btn btn-primary"),
+      size = "l",
+      easyClose = TRUE
+    )
+    shiny::showModal(dialog)
+  }
+
+}
+
+
+create_renewal_dt <- function(data) {
+
+  dplyr::select(data, .data$author, .data$title, .data$due_date) %>%
+    DT::datatable(
+      rownames = FALSE,
+      colnames = c("Autor", "Titel", "F\u00e4lligkeit"),
+      selection = "none",
+      options = list(
+        dom = "t",
+        scrollY = "300px",
+        scrollCollapse = TRUE,
+        paging = FALSE
+      )
+    ) %>%
+    # use Swiss format for dates
+    DT::formatDate("due_date",
+                   method = "toLocaleDateString",
+                   params = "de-CH")
+
 }
