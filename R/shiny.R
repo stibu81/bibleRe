@@ -80,9 +80,11 @@ as_link <- function(text, link) {
 
 # create datatable with DT
 create_datatable <- function(table,
-                             type = c("documents", "orders", "fees")) {
+                             type = c("documents", "orders", "fees"),
+                             select_style = c("multi", "os")) {
 
   type <- match.arg(type)
+  select_style <- match.arg(select_style)
 
   hide_cols <- get_hidden_cols(type)
   col_names <- get_col_names(type)
@@ -121,7 +123,7 @@ create_datatable <- function(table,
           list(extend = "selectAll", className = "btn btn-primary"),
           list(extend = "selectNone", className = "btn btn-primary")
         ),
-        select = list(style = "multi"),
+        select = list(style = select_style),
         # in order for the bootstrapping theme to work correctly for the
         # DT-buttons, the class dt-button must be removed.
         # see answer by Stéphane Laurent, https://stackoverflow.com/a/62904879/4303162
