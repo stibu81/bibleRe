@@ -129,11 +129,18 @@ create_datatable <- function(table,
         # see answer by Stéphane Laurent, https://stackoverflow.com/a/62904879/4303162
         # This line is licenced under
         # CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/).
-        # Modified to also change class of search field.
         initComplete = DT::JS(
-          "function() {",
+          "function(settings, json) {",
             "$('.dt-buttons button').removeClass('dt-button');",
+            # Modified to also change class of search field.
             "$('div.dataTables_filter input').addClass('form-control');",
+            # Workaround to reset selected lines if DT is reloaded.
+            # see comment by stla,
+            # https://github.com/rstudio/DT/issues/828#issuecomment-659955494
+            "var table = this.api().table();",
+            "setTimeout(function() {",
+              "table.rows().deselect();",
+            "}, 0)",
           "}")
       ),
       rownames = FALSE,

@@ -120,22 +120,7 @@ server <- function(input, output, session) {
   # renew selected documents
   observeEvent(input$renew, {
     if (input$select_table == "documents") {
-      # for some reason, table_rows_selected is not reset, when the table
-      # is redrawn. Even using selectRows(proxy, NULL) does not reset
-      # it. However, table_cell_clicked is reset.
-      # => Check table_cell_clicked. If no cell has been clicked, ignore
-      # table_rows_selected.
-      # Unfortunately, input$table_cell_clicked is an empty list also
-      # after the Select All button has been clicked. This case is handled
-      # separately, but of course this means that a selection of all rows
-      # is conserved after a reload.
-      i_rows <- if (length(input$table_cell_clicked) > 0 ||
-                    identical(input$table_rows_selected, input$table_rows_all)) {
-        input$table_rows_selected
-      } else {
-        integer(0)
-      }
-      selected <- show_table()[i_rows, ]
+      selected <- show_table()[input$table_rows_selected, ]
       # only renew documents that can be renewed (less than 2 renewals)
       # that have not already be renewed today
       state$renew <- filter(
