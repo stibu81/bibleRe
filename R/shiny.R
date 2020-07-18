@@ -80,9 +80,11 @@ as_link <- function(text, link) {
 
 # create datatable with DT
 create_datatable <- function(table,
-                             type = c("documents", "orders", "fees")) {
+                             type = c("documents", "orders", "fees"),
+                             select_style = c("multi", "os")) {
 
   type <- match.arg(type)
+  select_style <- match.arg(select_style)
 
   hide_cols <- get_hidden_cols(type)
   col_names <- get_col_names(type)
@@ -100,7 +102,7 @@ create_datatable <- function(table,
           targets = which(names(table) %in% hide_cols) - 1)),
         dom = "Bfti",
         language  = list(
-          search = "Suche:",
+          search = "<b>Suche:</b>",
           emptyTable = "Es sind keine Daten verf\u00fcgbar.",
           info = "_TOTAL_ Eintr\u00e4ge",
           infoEmpty = "0 Eintr\u00e4ge",
@@ -117,8 +119,29 @@ create_datatable <- function(table,
               "0" = "")
           )
         ),
-        buttons = c("selectAll", "selectNone"),
-        select = list(style = "multi")
+        buttons = list(
+          list(extend = "selectAll", className = "btn btn-primary"),
+          list(extend = "selectNone", className = "btn btn-primary")
+        ),
+        select = list(style = select_style),
+        # in order for the bootstrapping theme to work correctly for the
+        # DT-buttons, the class dt-button must be removed.
+        # see answer by Stéphane Laurent, https://stackoverflow.com/a/62904879/4303162
+        # This line is licenced under
+        # CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/).
+        initComplete = DT::JS(
+          "function(settings, json) {",
+            "$('.dt-buttons button').removeClass('dt-button');",
+            # Modified to also change class of search field.
+            "$('div.dataTables_filter input').addClass('form-control');",
+            # Workaround to reset selected lines if DT is reloaded.
+            # see comment by stla,
+            # https://github.com/rstudio/DT/issues/828#issuecomment-659955494
+            "var table = this.api().table();",
+            "setTimeout(function() {",
+              "table.rows().deselect();",
+            "}, 0)",
+          "}")
       ),
       rownames = FALSE,
       colnames = col_names,
@@ -208,4 +231,101 @@ get_table_name <- function(type) {
                       orders = "Reservationen",
                       fees = "Geb\u00fchren")
   table_names[[type]]
+}
+
+
+# Show a dialog for confirmation of renewal
+# renew is the table of documents to be renewed
+renewal_dialog <- function(renew, n_selected) {
+
+  n <- nrow(renew)
+
+  # dialog if there are documents
+  if (n > 0) {
+
+    # if n_selected is given and some documents are not renewable,
+    # add a message.
+    text1 <- if (!is.null(n_selected) && n_selected != n) {
+      shiny::tags$p(
+        paste(n_selected - n,
+              "der ausgew\u00e4hlten Dokumente k\u00f6nnen",
+              "nicht verl\u00e4ngert werden.")
+      )
+    }
+    text2 <- if (n == 1) {
+      "Soll folgendes Dokument verl\u00e4ngert werden?"
+    } else {
+      paste("Sollen folgende", nrow(renew), "Dokumente verl\u00e4ngert werden?")
+    }
+
+    dialog <- shiny::modalDialog(
+      text1, text2, DT::renderDT(create_renewal_dt(renew)),
+      title = "Verl\u00e4ngerung",
+      footer = shiny::tagList(
+        shiny::actionButton("confirmRenew", "OK",
+                            class = "btn btn-primary"),
+        shiny::modalButton("Abbrechen") %>%
+          shiny::tagAppendAttributes(class = "btn btn-primary")),
+      size = "l",
+      easyClose = TRUE
+    )
+
+  # dialog if there are now documents to renew
+  } else {
+    dialog <- shiny::modalDialog(
+      paste("Es wurden keine verl\u00e4ngerbaren Dokumente ausgew\u00e4hlt."),
+      title = "Verl\u00e4ngerung",
+      footer = shiny::modalButton("OK") %>%
+        shiny::tagAppendAttributes(class = "btn btn-primary"),
+      easyClose = TRUE
+    )
+  }
+
+  shiny::showModal(dialog)
+}
+
+
+# dialog to indicate that renewal failed
+warn_failed_renewal <- function(documents, renew) {
+
+  failed <- dplyr::filter(documents,
+                          .data$chk_id %in% renew$chk_id,
+                          .data$renewal_date != lubridate::today())
+
+  if (nrow(failed) > 0) {
+
+    dialog <- shiny::modalDialog(
+      "Folgende Dokumente konnten nicht verl\u00e4ngert werden:",
+      DT::renderDT(create_renewal_dt(failed)),
+      title = "Verl\u00e4ngerung",
+      footer = shiny::modalButton("OK") %>%
+          shiny::tagAppendAttributes(class = "btn btn-primary"),
+      size = "l",
+      easyClose = TRUE
+    )
+    shiny::showModal(dialog)
+  }
+
+}
+
+
+create_renewal_dt <- function(data) {
+
+  dplyr::select(data, .data$author, .data$title, .data$due_date) %>%
+    DT::datatable(
+      rownames = FALSE,
+      colnames = c("Autor", "Titel", "F\u00e4lligkeit"),
+      selection = "none",
+      options = list(
+        dom = "t",
+        scrollY = "300px",
+        scrollCollapse = TRUE,
+        paging = FALSE
+      )
+    ) %>%
+    # use Swiss format for dates
+    DT::formatDate("due_date",
+                   method = "toLocaleDateString",
+                   params = "de-CH")
+
 }

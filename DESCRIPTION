@@ -1,6 +1,6 @@
 Package: bibleRe
 Title: Access the Webinterface of the Public Library in Koeniz
-Version: 0.2.1
+Version: 0.2.1.9007
 Author: Stefan Lanz
 Maintainer: Stefan Lanz <slanz1137@gmail.com>
 Description: The public library of Koeniz, Switzerland, offers a
@@ -11,7 +11,7 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1
 Imports: 
     rvest,
     jsonlite,
@@ -22,5 +22,7 @@ Imports:
     magrittr,
     stringr,
     shiny,
+    shinythemes,
+    shinyWidgets,
     DT,
     WriteXLS
