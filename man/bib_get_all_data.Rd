@@ -4,12 +4,15 @@
 \alias{bib_get_all_data}
 \title{Get All Data for a List of Users}
 \usage{
-bib_get_all_data(users)
+bib_get_all_data(users, with_progress = FALSE)
 }
 \arguments{
 \item{users}{a list of users with username and password.
 Such a list can be created from a JSON file using
 \code{\link{bib_read_login_data}}.}
+
+\item{with_progress}{logical indicating whether a progress indicator
+should be shown, if the function is called from a shiny app.}
 }
 \description{
 Get all the available data (documents, orders, fees) for

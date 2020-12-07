@@ -6,12 +6,32 @@
 #' @param users a list of users with username and password.
 #'  Such a list can be created from a JSON file using
 #'  \code{\link{bib_read_login_data}}.
+#' @param with_progress logical indicating whether a progress indicator
+#'  should be shown, if the function is called from a shiny app.
 #'
 #' @export
 
-bib_get_all_data <- function(users) {
+bib_get_all_data <- function(users, with_progress = FALSE) {
 
-  all_data <- lapply(users, get_user_data) %>%
+  # if running from a shiny app and requested,
+  # show progress indicator
+  all_data <-
+    if (with_progress && shiny::isRunning()) {
+      shiny::withProgress({
+        lapply(seq_along(users), function(i) {
+          name <- names(users)[i]
+          msg <- paste0(name, " (", i, "/", length(users), ")")
+          shiny::incProgress(0.1, detail = msg)
+          userdata <- get_user_data(users[[i]])
+          shiny::incProgress(0.9, detail = "OK")
+          userdata
+        })
+      },
+      message = "Userdaten herunterladen",
+      max = length(users))
+    } else {
+      lapply(users, get_user_data)
+    } %>%
     magrittr::set_names(names(users))
 
   list(documents = bind_bib_data(all_data, "documents"),

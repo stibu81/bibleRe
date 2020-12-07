@@ -19,7 +19,7 @@ server <- function(input, output, session) {
   # get documents, if state$get_data is incremented
   all_data <- eventReactive(state$get_data, {
     if (length(choices) > 1) {
-      data <- bib_get_all_data(users)
+      data <- bib_get_all_data(users, with_progress = TRUE)
       counts <- c(nrow(data$documents),
                   vapply(names(users),
                          function(u) sum(data$documents$account == u),
