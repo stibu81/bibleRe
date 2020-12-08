@@ -281,9 +281,12 @@ renewal_dialog <- function(renew, n_selected) {
 # dialog to indicate that renewal failed
 warn_failed_renewal <- function(documents, renew) {
 
+  # renewal failed, if renewal date is NA (i.e., the document has
+  # never been renewed) or any other date than today
   failed <- dplyr::filter(documents,
                           .data$chk_id %in% renew$chk_id,
-                          .data$renewal_date != lubridate::today())
+                          .data$renewal_date != lubridate::today() |
+                            is.na(.data$renewal_date))
 
   if (nrow(failed) > 0) {
 
