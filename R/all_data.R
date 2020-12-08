@@ -31,8 +31,8 @@ bib_get_all_data <- function(users, with_progress = FALSE) {
       max = length(users))
     } else {
       lapply(users, get_user_data)
-    } %>%
-    magrittr::set_names(names(users))
+    }
+  names(all_data) <- names(users)
 
   list(documents = bind_bib_data(all_data, "documents"),
        orders = bind_bib_data(all_data, "orders"),
