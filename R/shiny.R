@@ -130,17 +130,10 @@ create_datatable <- function(table,
         # This line is licenced under
         # CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/).
         initComplete = DT::JS(
-          "function(settings, json) {",
+          "function() {",
             "$('.dt-buttons button').removeClass('dt-button');",
             # Modified to also change class of search field.
             "$('div.dataTables_filter input').addClass('form-control');",
-            # Workaround to reset selected lines if DT is reloaded.
-            # see comment by stla,
-            # https://github.com/rstudio/DT/issues/828#issuecomment-659955494
-            "var table = this.api().table();",
-            "setTimeout(function() {",
-              "table.rows().deselect();",
-            "}, 0)",
           "}")
       ),
       rownames = FALSE,
@@ -288,9 +281,12 @@ renewal_dialog <- function(renew, n_selected) {
 # dialog to indicate that renewal failed
 warn_failed_renewal <- function(documents, renew) {
 
+  # renewal failed, if renewal date is NA (i.e., the document has
+  # never been renewed) or any other date than today
   failed <- dplyr::filter(documents,
                           .data$chk_id %in% renew$chk_id,
-                          .data$renewal_date != lubridate::today())
+                          .data$renewal_date != lubridate::today() |
+                            is.na(.data$renewal_date))
 
   if (nrow(failed) > 0) {
 
