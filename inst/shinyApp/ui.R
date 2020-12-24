@@ -55,6 +55,12 @@ ui <- fluidPage(
       textInput("search",
                 tags$b("Katalogsuche:")),
       uiOutput("search_button"),
+      tags$br(),
+      tags$p(
+        actionLink("about",
+                   "Über bibleRe",
+                   class = "btn text-info")
+      ),
       width = 3
     ),
 

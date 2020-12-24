@@ -155,6 +155,9 @@ server <- function(input, output, session) {
     state$get_data <- state$get_data + 1
   })
 
+  # about bibleRe
+  observeEvent(input$about, bibleRe:::show_about())
+
   # stop app when session ends
   session$onSessionEnded(function() {
         stopApp()

@@ -325,3 +325,25 @@ create_renewal_dt <- function(data) {
                    params = "de-CH")
 
 }
+
+
+# show information about the software
+show_about <- function() {
+  shiny::showModal(
+    shiny::modalDialog(
+      "Einfacher Zugriff auf das Webinterface der",
+      shiny::tags$a(href = "https://koenizerbibliotheken.ch",
+                    "K\u00f6nizer Bibliotheken"),
+      ".", shiny::tags$br(), shiny::tags$br(),
+      as.character(utils::packageVersion("bibleRe")), shiny::tags$br(),
+      shiny::tags$a(href = "https://github.com/stibu81/bibleRe",
+                    "github.com/stibu81/bibleRe"),
+      shiny::tags$br(),
+      "\u00a9 2020 Stefan Lanz",
+      title = "\u00dcber bibleRe",
+      footer = shiny::modalButton("OK") %>%
+        shiny::tagAppendAttributes(class = "btn btn-primary"),
+      easyClose = TRUE
+    )
+  )
+}
