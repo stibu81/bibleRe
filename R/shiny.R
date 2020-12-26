@@ -374,3 +374,20 @@ show_login_file_missing <- function(file, users) {
     )
   )
 }
+
+
+# message if login failed for some users
+show_failed_logins <- function(failed_logins) {
+
+  shiny::showModal(
+    shiny::modalDialog(
+      "Der Login ist f\u00fcr folgende Benutzer fehlgeschlagen:",
+      shiny::tags$br(), shiny::tags$br(),
+      paste(failed_logins, collapse = ", "),
+      title = "Login fehlgeschlagen",
+      footer = shiny::modalButton("OK") %>%
+        shiny::tagAppendAttributes(class = "btn btn-primary"),
+      easyClose = TRUE
+    )
+  )
+}

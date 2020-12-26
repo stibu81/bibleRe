@@ -35,6 +35,7 @@ bib_login <- function(username, password) {
   # login has not worked. => issue a warning
   if (session$url == bib_urls$login) {
     warning("login failed!")
+    return(NULL)
   }
 
   session

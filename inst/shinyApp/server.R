@@ -9,23 +9,30 @@ server <- function(input, output, session) {
 
   # read the login data and fill menu for user selection
   users <- bib_read_login_data(getOption("biblere_login_data_file"))
-  choices <-
-    if (length(users) == 0) {
-      show_login_file_missing(getOption("biblere_login_data_file"), users)
-      character(0)
-    } else {
-      c("alle", names(users))
-    }
+  if (length(users) == 0) {
+    bibleRe:::show_login_file_missing(getOption("biblere_login_data_file"), users)
+  }
 
   # get documents, if state$get_data is incremented
   all_data <- eventReactive(state$get_data, {
-    if (length(choices) > 1) {
+    if (length(users) > 0) {
       data <- bib_get_all_data(users, with_progress = TRUE)
+
+      # check sucess of login. Warn in case of failure and remove the users from
+      # the list
+      if (!all(data$login)) {
+        failed_logins <- names(data$login)[!data$login]
+        warning("Login failed for users ", paste(failed_logins, collapse = ", "))
+        bibleRe:::show_failed_logins(failed_logins)
+        users <<- users[data$login]
+      }
+
       counts <- c(nrow(data$documents),
                   vapply(names(users),
                          function(u) sum(data$documents$account == u),
                          integer(1))
                   )
+      choices <- c("alle", names(users))
       names(choices) <- paste0(choices, " (", counts, ")")
       updateSelectInput(session,
                         "select_account",
@@ -42,7 +49,13 @@ server <- function(input, output, session) {
         state$renew <- NULL
       }
 
-      data
+      # if ALL logins failed, data does not have the correct format, which
+      # leads to problems in later code => return NULL in that situation
+      if (all(!data$login)) {
+        NULL
+      } else {
+        data
+      }
     } else {
       NULL
     }
