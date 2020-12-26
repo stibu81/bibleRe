@@ -11,7 +11,8 @@ server <- function(input, output, session) {
   users <- bib_read_login_data(getOption("biblere_login_data_file"))
   choices <-
     if (length(users) == 0) {
-      "Passwortdatei nicht gefunden!"
+      show_login_file_missing(getOption("biblere_login_data_file"), users)
+      character(0)
     } else {
       c("alle", names(users))
     }

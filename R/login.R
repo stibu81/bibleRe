@@ -83,10 +83,21 @@ bib_login <- function(username, password) {
 bib_read_login_data <- function(file) {
 
   if (!file.exists(file)) {
-    warning("File", file, "does not exist.")
-    return(list())
+    warning("File ", file, " does not exist.")
+    out <- list()
+    attr(out, "error_type") <- "file-not-exist"
+    return(out)
   }
 
-  jsonlite::fromJSON(file)
+  tryCatch({
+      jsonlite::fromJSON(file)
+    },
+    error = function(e) {
+      warning("File ", file, " is not a valid json file.")
+      out <- list()
+      attr(out, "error_type") <- "file-not-valid"
+      out
+    }
+  )
 
 }

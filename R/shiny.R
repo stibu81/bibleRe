@@ -18,7 +18,7 @@ run_biblere <- function(login_data_file = "~/.biblere_passwords",
                         launch.browser = NULL) {
 
     if (!file.exists(login_data_file)) {
-      stop("an existing file must be provided.")
+      warning("file ", login_data_file, " does not exist.")
     }
 
     options(biblere_login_data_file = login_data_file)
@@ -341,6 +341,33 @@ show_about <- function() {
       shiny::tags$br(),
       "\u00a9 2020 Stefan Lanz",
       title = "\u00dcber bibleRe",
+      footer = shiny::modalButton("OK") %>%
+        shiny::tagAppendAttributes(class = "btn btn-primary"),
+      easyClose = TRUE
+    )
+  )
+}
+
+
+# message if reading login data failed
+show_login_file_missing <- function(file, users) {
+
+  # create message from attribute of users
+  error_type <- attr(users, "error_type")
+  msg <-
+    if (error_type == "file-not-exist") {
+      "Die Datei existiert nicht."
+    } else if (error_type == "file-not-valid") {
+      "Die Datei ist keine g\u00fcltige JSON-Datei."
+    } else {
+      "Unbekannter Fehler."
+    }
+
+  shiny::showModal(
+    shiny::modalDialog(
+      "Das Einlesen der Datei", file, "ist fehlgeschlagen.",
+      shiny::tags$br(), shiny::tags$br(), msg,
+      title = "Lesen der Login-Daten fehlgeschlagen",
       footer = shiny::modalButton("OK") %>%
         shiny::tagAppendAttributes(class = "btn btn-primary"),
       easyClose = TRUE
