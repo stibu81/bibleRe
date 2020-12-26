@@ -332,12 +332,12 @@ show_about <- function() {
   shiny::showModal(
     shiny::modalDialog(
       "Einfacher Zugriff auf das Webinterface der",
-      shiny::tags$a(href = "https://koenizerbibliotheken.ch",
-                    "K\u00f6nizer Bibliotheken"),
+      shiny::HTML(
+        as_link("K\u00f6nizer Bibliotheken", "https://koenizerbibliotheken.ch")),
       ".", shiny::tags$br(), shiny::tags$br(),
       as.character(utils::packageVersion("bibleRe")), shiny::tags$br(),
-      shiny::tags$a(href = "https://github.com/stibu81/bibleRe",
-                    "github.com/stibu81/bibleRe"),
+      shiny::HTML(
+        as_link("github.com/stibu81/bibleRe", "https://github.com/stibu81/bibleRe")),
       shiny::tags$br(),
       "\u00a9 2020 Stefan Lanz",
       title = "\u00dcber bibleRe",
