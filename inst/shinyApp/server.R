@@ -69,7 +69,8 @@ server <- function(input, output, session) {
           all_data(),
           input$select_table,
           input$due_date,
-          input$select_account)
+          input$select_account,
+          input$non_renewable)
     }
   })
 

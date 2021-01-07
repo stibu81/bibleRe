@@ -38,6 +38,10 @@ ui <- fluidPage(
         actionButton("show_all_dates", "alle",
                      class = "btn btn-primary"))
       ),
+      shinyWidgets::awesomeCheckbox(
+        "non_renewable",
+        "nur nicht verlängerbare"
+      ),
       shinyWidgets::awesomeRadio(
         "select_table",
         tags$b("Tabelle auswählen"),

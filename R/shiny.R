@@ -43,7 +43,8 @@ run_biblere <- function(login_data_file = "~/.biblere_passwords",
 prepare_table <- function(data,
                           type = c("documents", "orders", "fees"),
                           due_date = as.Date("2100-01-01"),
-                          account = "alle") {
+                          account = "alle",
+                          only_non_renwable = FALSE) {
 
   type <- match.arg(type)
 
@@ -51,10 +52,14 @@ prepare_table <- function(data,
   table <- data[[type]]
 
   # only table of documents is ordered by and filtered for due_date
+  # and non-renewable documents
   if (type == "documents") {
     table %<>% dplyr::filter(.data$due_date <= !!due_date) %>%
       dplyr::arrange(.data$due_date) %>%
       dplyr::mutate(due = .data$due_date <= lubridate::today())
+    if (only_non_renwable) {
+      table %<>% dplyr::filter(.data$n_renewal == 2)
+    }
   }
 
   if (account != "alle") {
