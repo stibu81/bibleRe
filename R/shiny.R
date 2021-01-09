@@ -334,6 +334,12 @@ create_renewal_dt <- function(data) {
 
 # show information about the software
 show_about <- function() {
+
+  # get copyright info from LICENSE file
+  license <- system.file("LICENSE", package = "bibleRe") %>%
+    read.dcf()
+  copyright <- paste("\u00a9", license[1, "YEAR"], license[1, "COPYRIGHT HOLDER"])
+
   shiny::showModal(
     shiny::modalDialog(
       "Einfacher Zugriff auf das Webinterface der",
@@ -343,8 +349,7 @@ show_about <- function() {
       as.character(utils::packageVersion("bibleRe")), shiny::tags$br(),
       shiny::HTML(
         as_link("github.com/stibu81/bibleRe", "https://github.com/stibu81/bibleRe")),
-      shiny::tags$br(),
-      "\u00a9 2020 Stefan Lanz",
+      shiny::tags$br(), copyright,
       title = "\u00dcber bibleRe",
       footer = shiny::modalButton("OK") %>%
         shiny::tagAppendAttributes(class = "btn btn-primary"),
