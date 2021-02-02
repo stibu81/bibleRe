@@ -4,6 +4,8 @@ ui <- fluidPage(
 
   titlePanel("bibleRe: Zugang zum Webinterface der K\u00f6nizer Bibliotheken"),
 
+  shinyjs::useShinyjs(),
+
   sidebarLayout(
     # Sidebar with inputs ######
     sidebarPanel(

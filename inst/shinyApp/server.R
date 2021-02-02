@@ -7,6 +7,12 @@ server <- function(input, output, session) {
   state <- reactiveValues(get_data = 0,
                           renew = NULL)
 
+  # deactivate download button, if WriteXLS and/or Perl are not available
+  if (!bibleRe:::can_write_excel()) {
+    message("Excel export is not possible on this system.")
+    shinyjs::disable("download_documents")
+  }
+
   # read the login data and fill menu for user selection
   users <- bib_read_login_data(getOption("biblere_login_data_file"))
   if (length(users) == 0) {
