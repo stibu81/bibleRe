@@ -347,11 +347,11 @@ show_about <- function() {
         as_link("K\u00f6nizer Bibliotheken", "https://koenizerbibliotheken.ch")),
       ".", shiny::tags$br(), shiny::tags$br(),
 
-      if (bibleRe:::can_write_excel()) {
-        "Excel-Export ist auf diesem System möglich."
+      if (can_write_excel()) {
+        "Excel-Export ist auf diesem System m\u00f6glich."
       } else {
         shiny::HTML(
-          "Excel-Export ist auf diesem System nicht möglich. Bitte installiere",
+          "Excel-Export ist auf diesem System nicht m\u00f6glich. Bitte installiere",
           as_link("perl", "https://www.perl.org/"),
           "und",
           as_link("WriteXLS", "https://cran.r-project.org/web/packages/WriteXLS/"),
