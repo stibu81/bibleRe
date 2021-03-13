@@ -22,14 +22,22 @@
 
 bib_login <- function(username, password) {
 
-  session <- rvest::html_session(bib_urls$login)
+  # is username is a list, checkt that it contains username and passwort
+  if (is.list(username)) {
+    if (all(c("username", "password") %in% names(username))) {
+      password <- username$password
+      username <- username$username
+    } else {
+      stop("invalid input for username")
+    }
+  }
+
+  session <- rvest::session(bib_urls$login)
   form <- rvest::html_form(session)[[2]]
-  filled_form <- rvest::set_values(form,
+  filled_form <- rvest::html_form_set(form,
                                    Username = username,
                                    Password = password)
-  session <- rvest::submit_form(session,
-                                filled_form,
-                                "<unnamed>")
+  session <- rvest::session_submit(session, filled_form)
 
   # if the urls associated with the session is still the same,
   # login has not worked. => issue a warning
