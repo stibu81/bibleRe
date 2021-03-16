@@ -9,12 +9,11 @@
 
 bib_list_fees <- function(session) {
 
-  page <- rvest::jump_to(session,
-                         bib_urls$fees)
+  page <- rvest::session_jump_to(session, bib_urls$fees)
 
   # extract the node with the document table
   tab_node <- page %>%
-    rvest::html_node(xpath = "//table[@class='table wo-grid-table']")
+    rvest::html_element(xpath = "//table[@class='table wo-grid-table']")
 
   if (length(tab_node) > 0) {
     table <- extract_fees_table(tab_node)

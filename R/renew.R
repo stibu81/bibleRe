@@ -15,6 +15,6 @@ bib_renew <- function(session, chk_ids) {
                   collapse = "&")
   url <- paste0(bib_urls$renew, query)
 
-  page <- rvest::jump_to(session, url)
+  page <- rvest::session_jump_to(session, url)
 
 }

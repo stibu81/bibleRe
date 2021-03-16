@@ -9,12 +9,11 @@
 
 bib_list_orders <- function(session) {
 
-  page <- rvest::jump_to(session,
-                         bib_urls$orders)
+  page <- rvest::session_jump_to(session, bib_urls$orders)
 
   # extract the node with the document table
   tab_node <- page %>%
-    rvest::html_node(xpath = "//table[@class='table wo-grid-table']")
+    rvest::html_element(xpath = "//table[@class='table wo-grid-table']")
 
   if (length(tab_node) > 0) {
     table <- extract_orders_table(tab_node) %>%
