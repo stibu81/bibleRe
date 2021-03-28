@@ -22,7 +22,7 @@ bib_list_documents <- function(session) {
                             chk_id = extract_checkbox_ids(tab_node))
   } else {
     table <- dplyr::tibble(
-      id = integer(0),
+      id = character(0),
       author = character(0),
       title = character(0),
       due_date = as.Date(character(0)),
@@ -60,6 +60,9 @@ extract_document_table <- function(tab_node) {
     tidyr::separate("author_title", c("author", "title"),
                     "\n", fill = "left") %>%
     dplyr::mutate(
+      # id is not always numeric => convert to character to avoid crash
+      # when tables are combined.
+      id = as.character(.data$id),
       due_date = lubridate::dmy(.data$due_date),
       renewal_date = lubridate::dmy(.data$renewal_date),
       author = stringr::str_remove(.data$author, "\\d+-\\d*") %>%

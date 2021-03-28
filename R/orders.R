@@ -20,7 +20,7 @@ bib_list_orders <- function(session) {
       dplyr::mutate(link = extract_document_links(tab_node))
   } else {
     table <- dplyr::tibble(
-      id = integer(0),
+      id = character(0),
       author = character(0),
       title = character(0),
       type = character(0),
@@ -47,6 +47,9 @@ extract_orders_table <- function(tab_node) {
     tidyr::separate("author_title", c("author", "title"),
                     "\n", fill = "left") %>%
     dplyr::mutate(
+      # id is not always numeric => convert to character to avoid crash
+      # when tables are combined.
+      id = as.character(.data$id),
       order_date = lubridate::dmy(.data$order_date),
       author = stringr::str_remove(.data$author, "\\d+-\\d*") %>%
                 stringr::str_trim(),
