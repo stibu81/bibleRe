@@ -58,7 +58,7 @@ prepare_table <- function(data,
       dplyr::arrange(.data$due_date) %>%
       dplyr::mutate(due = .data$due_date <= lubridate::today())
     if (only_non_renwable) {
-      table %<>% dplyr::filter(.data$n_renewal == 2)
+      table %<>% dplyr::filter(.data$n_renewal >= 2)
     }
   }
 
