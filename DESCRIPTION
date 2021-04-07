@@ -1,6 +1,6 @@
 Package: bibleRe
 Title: Access the Webinterface of the Public Library in Koeniz
-Version: 1.0.1.9002
+Version: 1.0.1.9003
 Author: Stefan Lanz
 Maintainer: Stefan Lanz <slanz1137@gmail.com>
 Description: The public library of Koeniz, Switzerland, offers a
@@ -26,6 +26,7 @@ Imports:
     shinythemes,
     shinyWidgets,
     shinyjs,
-    DT (>= 0.14.3)
+    DT (>= 0.14.3),
+    digest
 Suggests:
     WriteXLS

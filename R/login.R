@@ -36,7 +36,8 @@ bib_login <- function(username, password) {
   form <- rvest::html_form(session)[[2]]
   filled_form <- rvest::html_form_set(form,
                                    Username = username,
-                                   Password = password)
+                                   Password = bib_encrypt(password)
+                                   )
   session <- rvest::session_submit(session, filled_form)
 
   # if the urls associated with the session is still the same,
@@ -109,4 +110,26 @@ bib_read_login_data <- function(file) {
     }
   )
 
+}
+
+
+#' Encrypt Password
+#'
+#' The page uses simple encryption to make the transfer of passwords more
+#' secure. This function applies the appropriate encryption to generate a
+#' password that can be used for login.
+#'
+#' @param password character giving the password to be encrypted
+#'
+#' @export
+
+bib_encrypt <- function(password) {
+
+  timestamp <- rvest::read_html(bib_urls$timestamp) %>%
+    rvest::html_text()
+  enc <- paste0(timestamp, ":", password) %>%
+    digest::digest(serialize = FALSE) %>%
+    toupper()
+
+  paste0(timestamp, ":", enc)
 }

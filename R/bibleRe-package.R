@@ -28,7 +28,8 @@ bib_urls <- dplyr::tibble(
   renew = paste0(base_url,
                  "account/renew?"),
   fees = paste0(base_url, "account/fees"),
-  orders = paste0(base_url, "account/orders")
+  orders = paste0(base_url, "account/orders"),
+  timestamp = paste0(base_url, "handler/timestamp")
 )
 
 globalVariables(".")
