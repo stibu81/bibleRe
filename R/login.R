@@ -42,8 +42,8 @@ bib_login <- function(username, password) {
 
   # if the urls associated with the session is still the same,
   # login has not worked. => issue a warning
-  if (session$url == bib_urls$login) {
-    warning("login failed!")
+  if (session$response$status_code != 200 || session$url == bib_urls$login) {
+    warning("login failed")
     return(NULL)
   }
 
@@ -125,7 +125,11 @@ bib_read_login_data <- function(file) {
 
 bib_encrypt <- function(password) {
 
+  # this just gets a timestamp from the server. Creating the timestamp
+  # in the code does not work reliably. Maybe, only timestamps that have been
+  # request from the server will work?
   timestamp <- rvest::read_html(bib_urls$timestamp) %>%
+    rvest::html_element("p") %>%
     rvest::html_text()
   enc <- paste0(timestamp, ":", password) %>%
     digest::digest(serialize = FALSE) %>%
