@@ -32,7 +32,11 @@ bib_login <- function(username, password) {
     }
   }
 
-  session <- rvest::session(bib_urls$login)
+  session <- try(rvest::session(bib_urls$login))
+  if (inherits(session, "try-error")) {
+    warning("connection failed")
+    return(NULL)
+  }
   form <- rvest::html_form(session)[[2]]
   filled_form <- rvest::html_form_set(form,
                                    Username = username,
