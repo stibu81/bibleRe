@@ -32,16 +32,16 @@ bib_login <- function(username, password) {
     }
   }
 
-  session <- try(rvest::session(bib_urls$login))
-  if (inherits(session, "try-error")) {
+  if (!bib_check()) {
     warning("connection failed")
     return(NULL)
   }
+
+  session <- rvest::session(bib_urls$login)
   form <- rvest::html_form(session)[[2]]
   filled_form <- rvest::html_form_set(form,
-                                   Username = username,
-                                   Password = bib_encrypt(password)
-                                   )
+                                      Username = username,
+                                      Password = bib_encrypt(password))
   session <- rvest::session_submit(session, filled_form)
 
   # if the urls associated with the session is still the same,
@@ -141,3 +141,22 @@ bib_encrypt <- function(password) {
 
   paste0(timestamp, ":", enc)
 }
+
+
+#' Check that Login Page is Reachable
+#'
+#' Check that the login page can be reached. If this fails, either there is
+#' no internet connection or the server of library is down.
+#'
+#' @return
+#' logical indicating whether the login page could be reached
+#'
+#' @export
+
+bib_check <- function() {
+  session <- try(rvest::session(bib_urls$login))
+  !(inherits(session, "try-error") || session$response$status_code != 200)
+}
+
+
+

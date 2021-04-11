@@ -21,7 +21,7 @@ server <- function(input, output, session) {
 
   # get documents, if state$get_data is incremented
   all_data <- eventReactive(state$get_data, {
-    if (length(users) > 0) {
+    if (length(users) > 0 && (bc <- bib_check())) {
       data <- bib_get_all_data(users, with_progress = TRUE)
 
       # check sucess of login. Warn in case of failure and remove the users from
@@ -63,6 +63,8 @@ server <- function(input, output, session) {
         data
       }
     } else {
+      # on reason to end up here is that bib_check() failed. If so, show message.
+      if (!bc) bibleRe:::show_no_connection()
       NULL
     }
   })

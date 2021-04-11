@@ -401,6 +401,21 @@ show_login_file_missing <- function(file, users) {
 }
 
 
+# message if no connection to the server
+show_no_connection <- function() {
+
+  shiny::showModal(
+    shiny::modalDialog(
+      "Keine Verbindung zum Server. Bitte \u00fcberpr\u00fcfe die Internetverbindung.",
+      title = "Keine Verbindung",
+      footer = shiny::modalButton("OK") %>%
+        shiny::tagAppendAttributes(class = "btn btn-primary"),
+      easyClose = TRUE
+    )
+  )
+}
+
+
 # message if login failed for some users
 show_failed_logins <- function(failed_logins) {
 
