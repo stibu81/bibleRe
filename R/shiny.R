@@ -436,7 +436,6 @@ show_failed_logins <- function(failed_logins) {
 # check that WriteXLS and Perl are installed
 can_write_excel <- function() {
   ok <- length(find.package("WriteXLS", quiet = TRUE)) > 0
-  if (ok) ok <- WriteXLS::testPerl(verbose = TRUE)
-  # there is a bug in testPerl() if verbose = FALSE.
+  if (ok) ok <- WriteXLS::testPerl(verbose = FALSE)
   ok
 }
