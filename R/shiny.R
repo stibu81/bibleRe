@@ -172,6 +172,41 @@ create_datatable <- function(table,
 }
 
 
+# write a table to excel
+write_excel <- function(table, file,
+                        type = c("documents", "orders", "fees")) {
+
+  excel_method <- get_excel_method()
+  if (excel_method == "none") {
+    warning("Excel export is not possible on this system.")
+    return(FALSE)
+  }
+
+  type <- match.arg(type)
+  export_table <- create_export_table(table, type)
+
+  if (excel_method == "WriteXLS") {
+    WriteXLS::WriteXLS(
+      export_table,
+      file,
+      SheetNames = get_table_name(type),
+      AdjWidth = TRUE,
+      BoldHeaderRow = TRUE,
+      FreezeRow = 1
+    )
+  } else if (excel_method == "writexl") {
+    list(export_table) %>%
+      magrittr::set_names(get_table_name(type)) %>%
+      writexl::write_xlsx(file)
+  } else {
+    warning("Invalid output from get_excel_method(): ",
+            excel_method)
+    return(FALSE)
+  }
+
+  TRUE
+}
+
 # helper function to create table for export
 create_export_table <- function(table,
                                 type = c("documents", "orders", "fees")) {
@@ -340,6 +375,8 @@ show_about <- function() {
     read.dcf()
   copyright <- paste("\u00a9", license[1, "YEAR"], license[1, "COPYRIGHT HOLDER"])
 
+  excel_method <- get_excel_method()
+
   shiny::showModal(
     shiny::modalDialog(
       "Einfacher Zugriff auf das Webinterface der",
@@ -347,11 +384,15 @@ show_about <- function() {
         as_link("K\u00f6nizer Bibliotheken", "https://koenizerbibliotheken.ch")),
       ".", shiny::tags$br(), shiny::tags$br(),
 
-      if (can_write_excel()) {
-        "Excel-Export ist auf diesem System m\u00f6glich."
+      if (excel_method != "none") {
+        paste("Excel-Export ist auf diesem System m\u00f6glich.",
+              "Verwendetes Package: ", excel_method)
       } else {
         shiny::HTML(
-          "Excel-Export ist auf diesem System nicht m\u00f6glich. Bitte installiere",
+          "Excel-Export ist auf diesem System nicht m\u00f6glich.<br>",
+          "Bitte installiere",
+          as_link("writexl", "https://cran.r-project.org/web/packages/writexl/"),
+          "oder",
           as_link("perl", "https://www.perl.org/"),
           "und",
           as_link("WriteXLS", "https://cran.r-project.org/web/packages/WriteXLS/"),
@@ -433,9 +474,19 @@ show_failed_logins <- function(failed_logins) {
 }
 
 
-# check that WriteXLS and Perl are installed
-can_write_excel <- function() {
-  ok <- length(find.package("WriteXLS", quiet = TRUE)) > 0
-  if (ok) ok <- WriteXLS::testPerl(verbose = FALSE)
-  ok
+# check whether Excel export is possible. There are two supported variants:
+# * WriteXLS (preferred), which also requires a perl installation
+# * writexl, which has no dependencies but is less feature rich
+get_excel_method <- function() {
+
+  has_package <- function(x) length(find.package(x, quiet = TRUE)) > 0
+
+  # check WriteXLS
+  if (has_package("WriteXLS") && WriteXLS::testPerl(verbose = FALSE)) {
+    "WriteXLS"
+  } else if (has_package("writexl")) {
+    "writexl"
+  } else {
+    "none"
+  }
 }

@@ -8,7 +8,7 @@ server <- function(input, output, session) {
                           renew = NULL)
 
   # deactivate download button, if WriteXLS and/or Perl are not available
-  if (!bibleRe:::can_write_excel()) {
+  if (bibleRe:::get_excel_method() == "none") {
     message("Excel export is not possible on this system.")
     shinyjs::disable("download_documents")
   }
@@ -98,13 +98,7 @@ server <- function(input, output, session) {
              ".xlsx")
     },
     content = function(file) {
-      bibleRe:::create_export_table(show_table(),
-                                    input$select_table) %>%
-      WriteXLS::WriteXLS(file,
-                         SheetNames = bibleRe:::get_table_name(input$select_table),
-                         AdjWidth = TRUE,
-                         BoldHeaderRow = TRUE,
-                         FreezeRow = 1)
+      bibleRe:::write_excel(show_table(), file, input$select_table)
     }
   )
 
