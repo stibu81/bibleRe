@@ -13,7 +13,7 @@ installation is found.}
 }
 \value{
 character vector with the names of the packages that can be used for
-Excel export.
+Excel export (invisibly).
 }
 \description{
 Excel export with \code{\link{bib_write_excel}} uses either \code{\link[WriteXLS:WriteXLS]{WriteXLS::WriteXLS()}}
