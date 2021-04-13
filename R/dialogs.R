@@ -84,7 +84,7 @@ show_about <- function() {
     read.dcf()
   copyright <- paste("\u00a9", license[1, "YEAR"], license[1, "COPYRIGHT HOLDER"])
 
-  excel_method <- get_excel_method()
+  excel_method <- bib_excel_method()
 
   shiny::showModal(
     shiny::modalDialog(
@@ -99,13 +99,17 @@ show_about <- function() {
       } else {
         shiny::HTML(
           "Excel-Export ist auf diesem System nicht m\u00f6glich.<br>",
-          "Bitte installiere",
-          as_link("writexl", "https://cran.r-project.org/web/packages/writexl/"),
-          "oder",
-          as_link("perl", "https://www.perl.org/"),
-          "und",
-          as_link("WriteXLS", "https://cran.r-project.org/web/packages/WriteXLS/"),
-          "."
+          "Verwende <tt>bib_setup_excel_export()</tt>, um die n\u00f6tigen",
+          "R packages zu installieren",
+          paste0(
+            "(",
+            as_link("writexl", "https://cran.r-project.org/web/packages/writexl/"),
+            " und ",
+            as_link("WriteXLS", "https://cran.r-project.org/web/packages/WriteXLS/"),
+            ").<br>"
+          ),
+          "WriteXLS ben\u00f6tigt eine funktionierende Installation von",
+          paste0(as_link("perl", "https://www.perl.org/"), ".")
         )
       },
 

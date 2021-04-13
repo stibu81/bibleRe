@@ -172,72 +172,6 @@ create_datatable <- function(table,
 }
 
 
-# write a table to excel
-write_excel <- function(table, file,
-                        type = c("documents", "orders", "fees")) {
-
-  excel_method <- get_excel_method()
-  if (excel_method == "none") {
-    warning("Excel export is not possible on this system.")
-    return(FALSE)
-  }
-
-  type <- match.arg(type)
-  export_table <- create_export_table(table, type)
-
-  if (excel_method == "WriteXLS") {
-    WriteXLS::WriteXLS(
-      export_table,
-      file,
-      SheetNames = get_table_name(type),
-      AdjWidth = TRUE,
-      BoldHeaderRow = TRUE,
-      FreezeRow = 1
-    )
-  } else if (excel_method == "writexl") {
-    list(export_table) %>%
-      magrittr::set_names(get_table_name(type)) %>%
-      writexl::write_xlsx(file)
-  } else {
-    warning("Invalid output from get_excel_method(): ",
-            excel_method)
-    return(FALSE)
-  }
-
-  TRUE
-}
-
-# helper function to create table for export
-create_export_table <- function(table,
-                                type = c("documents", "orders", "fees")) {
-
-  type <- match.arg(type)
-
-  hide_cols <- get_hidden_cols(type)
-  col_names <- get_col_names(type)
-  date_cols <- stringr::str_subset(names(table), "date")
-
-  # if there is a column id, remove the link
-  if ("id" %in% names(table)) {
-    table %<>% dplyr::mutate(
-      id = stringr::str_remove_all(.data$id, "<[^>]*>")
-    )
-  }
-
-  # convert dates, rename columns
-  table %<>%
-    dplyr::mutate_at(date_cols,
-                     ~format(., format = "%d.%m.%Y")) %>%
-    magrittr::set_names(col_names)
-
-  # remove hidden columns
-  table <- table[, !names(table) %in% hide_cols]
-
-  table
-
-}
-
-
 # helper function to get hidden columns and german column names
 # for each table type
 get_hidden_cols <- function(type) {
@@ -260,14 +194,6 @@ get_col_names <- function(type) {
 }
 
 
-get_table_name <- function(type) {
-  table_names <- list(documents = "Ausleihen",
-                      orders = "Reservationen",
-                      fees = "Geb\u00fchren")
-  table_names[[type]]
-}
-
-
 create_renewal_dt <- function(data) {
 
   dplyr::select(data, .data$author, .data$title, .data$due_date) %>%
@@ -287,22 +213,4 @@ create_renewal_dt <- function(data) {
                    method = "toLocaleDateString",
                    params = "de-CH")
 
-}
-
-
-# check whether Excel export is possible. There are two supported variants:
-# * WriteXLS (preferred), which also requires a perl installation
-# * writexl, which has no dependencies but is less feature rich
-get_excel_method <- function() {
-
-  has_package <- function(x) length(find.package(x, quiet = TRUE)) > 0
-
-  # check WriteXLS
-  if (has_package("WriteXLS") && WriteXLS::testPerl(verbose = FALSE)) {
-    "WriteXLS"
-  } else if (has_package("writexl")) {
-    "writexl"
-  } else {
-    "none"
-  }
 }
