@@ -2,7 +2,7 @@
 % Please edit documentation in R/login.R
 \name{bib_login}
 \alias{bib_login}
-\title{Login to the Webinterface}
+\title{Login to the Web Interface}
 \usage{
 bib_login(username, password)
 }
@@ -17,7 +17,7 @@ the security warning under 'Details'.}
 a \code{session} object
 }
 \description{
-Login to the webinterface with username and password.
+Login to the web interface with username and password.
 }
 \details{
 \strong{Security warning:}

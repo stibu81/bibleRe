@@ -1,6 +1,6 @@
-#' Login to the Webinterface
+#' Login to the Web Interface
 #'
-#' Login to the webinterface with username and password.
+#' Login to the web interface with username and password.
 #'
 #' @param username character giving the username, which usually
 #'  consists of 6 digits.

@@ -88,10 +88,13 @@ show_about <- function() {
 
   shiny::showModal(
     shiny::modalDialog(
-      "Einfacher Zugriff auf das Webinterface der",
+      "Einfacher Zugriff auf das Web Interface der",
       shiny::HTML(
-        as_link("K\u00f6nizer Bibliotheken", "https://koenizerbibliotheken.ch")),
-      ".", shiny::tags$br(), shiny::tags$br(),
+        paste0(
+          as_link("K\u00f6nizer Bibliotheken", "https://koenizerbibliotheken.ch"),
+          ".")
+      ),
+      shiny::br(), shiny::br(),
 
       if (excel_method != "none") {
         paste("Excel-Export ist auf diesem System m\u00f6glich.",
@@ -113,12 +116,12 @@ show_about <- function() {
         )
       },
 
-      shiny::tags$br(), shiny::tags$br(),
+      shiny::br(), shiny::br(),
 
-      as.character(utils::packageVersion("bibleRe")), shiny::tags$br(),
+      as.character(utils::packageVersion("bibleRe")), shiny::br(),
       shiny::HTML(
         as_link("github.com/stibu81/bibleRe", "https://github.com/stibu81/bibleRe")),
-      shiny::tags$br(), copyright,
+      shiny::br(), copyright,
       title = "\u00dcber bibleRe",
       footer = shiny::modalButton("OK") %>%
         shiny::tagAppendAttributes(class = "btn btn-primary"),
@@ -145,7 +148,7 @@ show_login_file_missing <- function(file, users) {
   shiny::showModal(
     shiny::modalDialog(
       "Das Einlesen der Datei", file, "ist fehlgeschlagen.",
-      shiny::tags$br(), shiny::tags$br(), msg,
+      shiny::br(), shiny::br(), msg,
       title = "Lesen der Login-Daten fehlgeschlagen",
       footer = shiny::modalButton("OK") %>%
         shiny::tagAppendAttributes(class = "btn btn-primary"),
@@ -176,7 +179,7 @@ show_failed_logins <- function(failed_logins) {
   shiny::showModal(
     shiny::modalDialog(
       "Der Login ist f\u00fcr folgende Benutzer fehlgeschlagen:",
-      shiny::tags$br(), shiny::tags$br(),
+      shiny::br(), shiny::br(),
       paste(failed_logins, collapse = ", "),
       title = "Login fehlgeschlagen",
       footer = shiny::modalButton("OK") %>%

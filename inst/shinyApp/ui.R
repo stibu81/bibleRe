@@ -2,14 +2,14 @@ ui <- fluidPage(
 
   theme = shinythemes::shinytheme("lumen"),
 
-  titlePanel("bibleRe: Zugang zum Webinterface der K\u00f6nizer Bibliotheken"),
+  titlePanel("bibleRe: Zugang zum Web Interface der K\u00f6nizer Bibliotheken"),
 
   shinyjs::useShinyjs(),
 
   sidebarLayout(
     # Sidebar with inputs ######
     sidebarPanel(
-      tags$p(tags$b("Konto auswählen:")),
+      p(tags$b("Konto auswählen:")),
       fluidRow(
         column(8,
           selectInput(
@@ -24,7 +24,7 @@ ui <- fluidPage(
                        icon = icon("redo"),
                        class = "btn btn-primary"))
       ),
-      tags$p(tags$b("Rückgabe bis:")),
+      p(tags$b("Rückgabe bis:")),
       fluidRow(
         column(8,
           dateInput(
@@ -50,7 +50,7 @@ ui <- fluidPage(
         choices = c(Ausleihen = "documents",
                     Reservationen = "orders",
                     Gebühren = "fees")),
-      tags$p(
+      p(
         actionButton("renew", "Verlängern",
                      icon = icon("redo"),
                      class = "btn btn-primary"),
@@ -61,12 +61,10 @@ ui <- fluidPage(
       textInput("search",
                 tags$b("Katalogsuche:")),
       uiOutput("search_button"),
-      tags$br(),
-      tags$p(
-        actionLink("about",
-                   "Über bibleRe",
-                   class = "btn text-info")
-      ),
+      br(),
+      actionLink("about",
+                 "Über bibleRe",
+                 class = "btn text-info"),
       width = 3
     ),
 
