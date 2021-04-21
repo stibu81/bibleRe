@@ -27,10 +27,9 @@
 
 bib_excel_method <- function() {
 
-  # check WriteXLS
-  if (has_package("WriteXLS") && WriteXLS::testPerl(verbose = FALSE)) {
+  if (rlang::is_installed("WriteXLS") && WriteXLS::testPerl(verbose = FALSE)) {
     "WriteXLS"
-  } else if (has_package("writexl")) {
+  } else if (rlang::is_installed("writexl")) {
     "writexl"
   } else {
     "none"
@@ -125,7 +124,7 @@ bib_setup_excel_export <- function(pkgs = c("WriteXLS", "writexl")) {
   if ("WriteXLS" %in% pkgs) {
 
     # install WriteXLS if it is missing
-    if (has_package("WriteXLS")) {
+    if (rlang::is_installed("WriteXLS")) {
       message("Package WriteXLS is already installed. Check perl setup.")
     } else {
       # check whether perl is available
@@ -138,7 +137,7 @@ bib_setup_excel_export <- function(pkgs = c("WriteXLS", "writexl")) {
     }
 
     # check installation and perl setup
-    if (has_package("WriteXLS")) {
+    if (rlang::is_installed("WriteXLS")) {
       perl_ok <- WriteXLS::testPerl(verbose = TRUE)
       if (perl_ok) out <- c(out, "WriteXLS")
     } else {
@@ -149,7 +148,7 @@ bib_setup_excel_export <- function(pkgs = c("WriteXLS", "writexl")) {
   if ("writexl" %in% pkgs) {
 
     # install WriteXLS if it is missing
-    if (has_package("writexl")) {
+    if (rlang::is_installed("writexl")) {
       message("Package writexl is already installed.")
     } else {
       message("Installing writexl ...")
@@ -157,7 +156,7 @@ bib_setup_excel_export <- function(pkgs = c("WriteXLS", "writexl")) {
     }
 
     # check installation
-    if (has_package("writexl")) {
+    if (rlang::is_installed("writexl")) {
       out <- c(out, "writexl")
     } else {
       message("Installation of writexl failed.")
@@ -215,6 +214,3 @@ get_table_name <- function(type) {
   table_names[[type]]
 }
 
-
-# check whether a package is installed
-has_package <- function(x) length(find.package(x, quiet = TRUE)) > 0
