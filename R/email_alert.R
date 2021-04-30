@@ -57,10 +57,9 @@ bib_email_alert <- function(users, n_days, recipients,
 
     message("Sending email ...")
 
-    subj <- paste("bibleRe-Alert: ",
-                  nrow(relevant_docs),
-                  "Dokument(e), m\u00fcssen in den n\u00e4chsten",
-                  n_days, "Tagen retourniert werden")
+    # avoid non-ascii characters in subject
+    subj <- paste("bibleRe-Alert: ", nrow(relevant_docs),
+                  "Dokument(e) laufen in ", n_days, "Tagen ab")
 
     body <- paste0(
       "Nicht verl\u00e4ngerbare Dokumente ====================\n",
