@@ -27,15 +27,17 @@ ui <- fluidPage(
       p(tags$b("Rückgabe bis:")),
       fluidRow(
         column(8,
-          dateInput(
+          shinyWidgets::airDatepickerInput(
             "due_date",
             NULL,
             value = Sys.Date() + getOption("biblere_n_due_days"),
-            min = Sys.Date(),
-            max = Sys.Date() + 60,
-            format = "dd.mm.yyyy",
+            minDate = Sys.Date(),
+            maxDate = Sys.Date() + 60,
+            dateFormat = "dd.mm.yyyy",
             language = "de",
-            weekstart = 1)),
+            addon = "none",
+            autoClose = TRUE,
+            firstDay = 1)),
       column(4,
         actionButton("show_all_dates", "alle",
                      class = "btn btn-primary"))

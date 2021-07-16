@@ -60,6 +60,7 @@ server <- function(input, output, session) {
       if (all(!data$login)) {
         NULL
       } else {
+        prepare_date_input(data, session, input$select_account)
         data
       }
     } else {
@@ -80,6 +81,11 @@ server <- function(input, output, session) {
           input$select_account,
           input$non_renewable)
     }
+  })
+
+  # update the highlighted dates if the account is changed
+  observeEvent(input$select_account, {
+    prepare_date_input(all_data(), session, input$select_account)
   })
 
   # table output
@@ -104,14 +110,7 @@ server <- function(input, output, session) {
 
   # show all documents
   observeEvent(input$show_all_dates, {
-    max_date <- bibleRe:::prepare_table(
-          all_data(),
-          "documents") %>%
-      pull("due_date") %>%
-      max()
-    updateDateInput(session,
-                    "due_date",
-                    value = max_date)
+    prepare_date_input(all_data(), session, input$select_account, set_max_date = TRUE)
   })
 
   # create search button

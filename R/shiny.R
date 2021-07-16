@@ -83,6 +83,26 @@ as_link <- function(text, link) {
 }
 
 
+# date input: set maximum date and highlight all dates where loans run out
+prepare_date_input <- function(data, session, account, set_max_date = FALSE) {
+  due_dates <- prepare_table(
+      data,
+      type = "documents",
+      account = account
+    ) %>%
+    dplyr::pull("due_date") %>%
+    unique()
+  # determine the maximum date always over ALL accounts
+  max_date <- max(c(data$documents$due_date, Sys.Date()))
+  shinyWidgets::updateAirDateInput(
+    session,
+    "due_date",
+    value = if (set_max_date) max_date,
+    options = list(highlightedDates = due_dates,
+                   maxDate = max_date)
+  )
+}
+
 # create datatable with DT
 create_datatable <- function(table,
                              type = c("documents", "orders", "fees"),
@@ -192,7 +212,6 @@ get_col_names <- function(type) {
                              "Betrag", "Exemplar", "Notiz"))
   col_names[[type]]
 }
-
 
 create_renewal_dt <- function(data) {
 
