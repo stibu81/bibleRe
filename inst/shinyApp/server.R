@@ -60,7 +60,7 @@ server <- function(input, output, session) {
       if (all(!data$login)) {
         NULL
       } else {
-        prepare_date_input(data, session, input$select_account)
+        bibleRe:::prepare_date_input(data, session, input$select_account)
         data
       }
     } else {
@@ -85,7 +85,7 @@ server <- function(input, output, session) {
 
   # update the highlighted dates if the account is changed
   observeEvent(input$select_account, {
-    prepare_date_input(all_data(), session, input$select_account)
+    bibleRe:::prepare_date_input(all_data(), session, input$select_account)
   })
 
   # table output
@@ -110,7 +110,9 @@ server <- function(input, output, session) {
 
   # show all documents
   observeEvent(input$show_all_dates, {
-    prepare_date_input(all_data(), session, input$select_account, set_max_date = TRUE)
+    bibleRe:::prepare_date_input(all_data(), session,
+                                 input$select_account,
+                                 set_max_date = TRUE)
   })
 
   # create search button
