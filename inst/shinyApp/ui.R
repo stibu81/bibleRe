@@ -42,16 +42,49 @@ ui <- fluidPage(
         actionButton("show_all_dates", "alle",
                      class = "btn btn-primary"))
       ),
-      shinyWidgets::awesomeCheckbox(
-        "non_renewable",
-        "nur nicht verlängerbare"
-      ),
-      shinyWidgets::awesomeRadio(
-        "select_table",
-        tags$b("Tabelle auswählen"),
-        choices = c(Ausleihen = "documents",
-                    Reservationen = "orders",
-                    Gebühren = "fees")),
+      # use switch or checkbox
+      if (getOption("biblere_use_switches")) {
+        p(
+          shinyWidgets::switchInput(
+            "non_renewable",
+            onLabel = "",
+            offLabel = "",
+            onStatus = "primary",
+            size = "mini",
+            inline = TRUE,
+            labelWidth = 18,
+            handleWidth = 14
+          ),
+          HTML("&nbsp;&nbsp;nur nicht verlängerbare")
+        )
+      } else {
+        shinyWidgets::awesomeCheckbox(
+          "non_renewable",
+          "nur nicht verlängerbare"
+        )
+      },
+      if (getOption("biblere_use_switches")) {
+        shinyWidgets::radioGroupButtons(
+          "select_table",
+          tags$b("Tabelle auswählen"),
+          status = "primary",
+          direction = "vertical",
+          size = "sm",
+          choices = c(
+            "<i class='fa fa-book'></i> Ausleihen" = "documents",
+            "<i class='fa fa-calendar-check'></i> Reservationen" = "orders",
+            "<i class='fa fa-coins'></i> Gebühren" = "fees")
+        )
+      } else {
+        shinyWidgets::awesomeRadio(
+          "select_table",
+          tags$b("Tabelle auswählen"),
+          status = "primary",
+          choices = c(Ausleihen = "documents",
+                      Reservationen = "orders",
+                      Gebühren = "fees")
+        )
+      },
       p(
         actionButton("renew", "Verlängern",
                      icon = icon("redo"),

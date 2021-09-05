@@ -7,6 +7,7 @@
 run_biblere(
   login_data_file = "~/.biblere_passwords",
   n_due_days = 7,
+  use_switches = FALSE,
   launch.browser = NULL
 )
 }
@@ -17,6 +18,9 @@ a file containing the login data.}
 \item{n_due_days}{integer giving the default for the selection
 of the date used to filter due dates. By default, the app will
 show documents that are due at most \code{n_due_days} days form today.}
+
+\item{use_switches}{logical; set to \code{TRUE} in order to use a design
+that uses switches and buttons instead of check boxes and radio buttons.}
 
 \item{launch.browser}{logical, if \code{TRUE}, the application
 is opened in the system's default browser, if \code{FALSE},

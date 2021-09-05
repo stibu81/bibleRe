@@ -5,6 +5,8 @@
 #' @param n_due_days integer giving the default for the selection
 #'  of the date used to filter due dates. By default, the app will
 #'  show documents that are due at most `n_due_days` days form today.
+#' @param use_switches logical; set to `TRUE` in order to use a design
+#'  that uses switches and buttons instead of check boxes and radio buttons.
 #' @param launch.browser logical, if \code{TRUE}, the application
 #'  is opened in the system's default browser, if \code{FALSE},
 #'  no browser is started. If the argument is omitted, the value
@@ -15,6 +17,7 @@
 
 run_biblere <- function(login_data_file = "~/.biblere_passwords",
                         n_due_days = 7,
+                        use_switches = FALSE,
                         launch.browser = NULL) {
 
     if (!file.exists(login_data_file)) {
@@ -28,7 +31,8 @@ run_biblere <- function(login_data_file = "~/.biblere_passwords",
            call. = FALSE)
     }
 
-    options(biblere_n_due_days = n_due_days)
+    options(biblere_n_due_days = n_due_days,
+            biblere_use_switches = use_switches)
 
     if (is.null(launch.browser)) {
         launch.browser <- getOption("shiny.launch.browser", interactive())
