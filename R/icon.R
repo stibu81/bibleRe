@@ -11,10 +11,7 @@
 
 bib_get_icon <- function(file = "~/biblere.ico") {
 
-  if (!rlang::is_installed("faviconPlease")) {
-    stop("The package faviconPlease must be installed to download the favicon. ",
-         "Run install.packages('faviconPlease') to install it.")
-  }
+  rlang::check_installed("faviconPlease")
 
   file <- normalizePath(file, mustWork = FALSE)
   if (file.exists(file)) {
@@ -25,7 +22,6 @@ bib_get_icon <- function(file = "~/biblere.ico") {
   }
 
   favicon <- faviconPlease::faviconDuckDuckGo("koenizerbibliotheken.ch")
-  message("Downloading ", favicon, " ...")
   utils::download.file(favicon, file)
 
   invisible(file.exists(file))
