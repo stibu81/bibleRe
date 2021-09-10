@@ -28,54 +28,68 @@ bib_email_alert <- function(users, n_days, recipients,
 
   rlang::check_installed("emayili")
 
-  docs <- bib_get_all_data(users)$documents
-
-  # if no documents could be retrieved, abort and return FALSe
-  if (nrow(docs) == 0) {
-    warning("Could not retrieve any data.")
-    return(FALSE)
-  }
+  data <- bib_get_all_data(users)
+  docs <- data$documents
+  logins <- data$login
 
   # do any documents need to be returned during the next n days?
   max_date <- lubridate::today() + lubridate::days(floor(n_days))
 
-  relevant_docs <- docs %>%
-    dplyr::filter(.data$due_date <= max_date) %>%
-      dplyr::arrange(.data$due_date) %>%
-      dplyr::mutate(author = stringr::str_trunc(.data$author, 18),
-                    title = stringr::str_trunc(.data$title, 32)) %>%
-      dplyr::select(Konto = "account",
-                    Autor = "author",
-                    Titel = "title",
-                    "F\u00e4lligkeit" = "due_date",
-                    "Verl." = "n_renewal")
+  if (nrow(docs) > 0) {
+    relevant_docs <- docs %>%
+      dplyr::filter(.data$due_date <= max_date) %>%
+        dplyr::arrange(.data$due_date) %>%
+        dplyr::mutate(author = stringr::str_trunc(.data$author, 18),
+                      title = stringr::str_trunc(.data$title, 32)) %>%
+        dplyr::select(Konto = "account",
+                      Autor = "author",
+                      Titel = "title",
+                      "F\u00e4lligkeit" = "due_date",
+                      "Verl." = "n_renewal")
 
-  message(nrow(relevant_docs), " document(s) must be returned in the next ",
+      message(nrow(relevant_docs), " document(s) must be returned in the next ",
                   n_days, " days")
 
-  if (nrow(relevant_docs) > 0) {
+  } else {
+    relevant_docs <- dplyr::tibble("Verl." = numeric(0))
+  }
+
+  if (nrow(relevant_docs) > 0 || any(!logins)) {
 
     message("Sending email ...")
 
-    # avoid non-ascii characters in subject
-    subj <- paste("bibleRe-Alert: ", nrow(relevant_docs),
-                  "Dokument(e) laufen in ", n_days, "Tagen ab")
+    # avoid non-ascii characters in subject!
+    # Only mention loans that run out, if there are any
+    if (nrow(relevant_docs) > 0) {
+      subj <- paste("bibleRe-Alert: ", nrow(relevant_docs),
+                    "Dokument(e) laufen in ", n_days, "Tagen ab")
+    } else {
+      subj <- paste("bibleRe-Alert: ", sum(!logins), "fehlgeschlagene Logins")
+    }
 
     body <- paste0(
+      if (any(!logins)) {
+        paste0(
+          "WARNUNG: Fehlgeschlagene Logins für folgende Benutzer:\n",
+           paste(names(users)[!logins], collapse = ", "),
+          "\n\n"
+        )
+      },
       "Nicht verl\u00e4ngerbare Dokumente ====================\n",
       if (sum(relevant_docs$Verl. == 2) == 0) {
         "keine\n\n"
       } else {
         dplyr::filter(relevant_docs, .data$Verl. >= 2) %>%
           tibble_output()
-    },
-    "Verl\u00e4ngerbare Dokumente ========================\n",
-    if (sum(relevant_docs$Verl. < 2) == 0) {
-      "keine\n\n"
-    } else {
-      dplyr::filter(relevant_docs, .data$Verl. < 2) %>%
-        tibble_output()
-    })
+      },
+      "Verl\u00e4ngerbare Dokumente ========================\n",
+      if (sum(relevant_docs$Verl. < 2) == 0) {
+        "keine\n\n"
+      } else {
+        dplyr::filter(relevant_docs, .data$Verl. < 2) %>%
+          tibble_output()
+      }
+    )
 
     # prepare message
     email <- emayili::envelope(
