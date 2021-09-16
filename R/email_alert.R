@@ -70,7 +70,7 @@ bib_email_alert <- function(users, n_days, recipients,
     body <- paste0(
       if (any(!logins)) {
         paste0(
-          "WARNUNG: Fehlgeschlagene Logins für folgende Benutzer:\n",
+          "WARNUNG: Fehlgeschlagene Logins f\u00fcr folgende Benutzer:\n",
            paste(names(users)[!logins], collapse = ", "),
           "\n\n"
         )
