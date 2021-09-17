@@ -11,7 +11,7 @@ bib_list_documents(session)
 web interface}
 }
 \value{
-a tible containing a table of borrowed documents
+a tibble containing a table of borrowed documents
 }
 \description{
 List Borrowed Documents

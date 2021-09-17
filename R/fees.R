@@ -3,7 +3,7 @@
 #' @inheritParams bib_list_documents
 #'
 #' @return
-#' a tible containing a table of fees
+#' a tibble containing a table of fees
 #'
 #' @export
 

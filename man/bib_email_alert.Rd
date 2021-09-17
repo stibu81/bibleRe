@@ -37,7 +37,7 @@ with the SMTP server?}
 \value{
 \code{TRUE} if the function was successful, i.e., if either an alert was sent
 successfully or no alert was needed because no rentals are running out within
-the given time frame. If any error occured (e.g., during login or when
+the given time frame. If any error occurred (e.g., during login or when
 sending the email), \code{FALSE} is returned.
 }
 \description{

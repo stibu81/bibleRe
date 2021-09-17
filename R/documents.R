@@ -4,7 +4,7 @@
 #'  web interface
 #'
 #' @return
-#' a tible containing a table of borrowed documents
+#' a tibble containing a table of borrowed documents
 #'
 #' @export
 

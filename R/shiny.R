@@ -1,10 +1,11 @@
 #' Run the application
 #'
 #' @param login_data_file character giving the full path to
-#'  a file containing the login data.
+#'  a file containing the login data. So [`bib_read_login_data`] for
+#'  more information on the format of the file.
 #' @param n_due_days integer giving the default for the selection
 #'  of the date used to filter due dates. By default, the app will
-#'  show documents that are due at most `n_due_days` days form today.
+#'  show documents that are due at most `n_due_days` days from today.
 #' @param use_switches logical; set to `TRUE` in order to use a design
 #'  that uses switches and buttons instead of check boxes and radio buttons.
 #' @param launch.browser logical, if \code{TRUE}, the application

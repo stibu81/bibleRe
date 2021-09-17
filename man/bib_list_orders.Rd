@@ -11,7 +11,7 @@ bib_list_orders(session)
 web interface}
 }
 \value{
-a tible containing a table of orders
+a tibble containing a table of orders
 }
 \description{
 List Orders

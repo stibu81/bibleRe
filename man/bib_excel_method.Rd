@@ -17,7 +17,7 @@ Check which, if any, of the two variants of Excel export supported by
 \details{
 \code{bibleRe} supports Excel export with two packages:
 \describe{
-\item{\code{WriteXLS}}{This is the prefered method, but it requires a
+\item{\code{WriteXLS}}{This is the preferred method, but it requires a
 perl installation. Use \code{\link[WriteXLS:testPerl]{WriteXLS::testPerl()}} to check whether perl
 and all the required modules are installed. This writes formatted
 Excel files with fixed first row and adjusted column width.}

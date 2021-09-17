@@ -14,7 +14,7 @@ Read a JSON file with login data for one or more
 users.
 }
 \details{
-The JSON-file must have the following format:\if{html}{\out{<div class="sourceCode json">}}\preformatted{\{
+The JSON file must have the following format:\if{html}{\out{<div class="sourceCode json">}}\preformatted{\{
   "User1": \{
     "username": "123456",
     "password": "password1"

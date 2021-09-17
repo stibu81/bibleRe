@@ -3,7 +3,7 @@
 #' @inheritParams bib_list_documents
 #'
 #' @return
-#' a tible containing a table of orders
+#' a tibble containing a table of orders
 #'
 #' @export
 

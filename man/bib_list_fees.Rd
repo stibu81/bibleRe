@@ -11,7 +11,7 @@ bib_list_fees(session)
 web interface}
 }
 \value{
-a tible containing a table of fees
+a tibble containing a table of fees
 }
 \description{
 List Fees

@@ -64,7 +64,7 @@ bib_login <- function(username, password) {
 #' @param file character giving the name of a file.
 #'
 #' @details
-#' The JSON-file must have the following format:
+#' The JSON file must have the following format:
 #'
 #' ```json
 #' {

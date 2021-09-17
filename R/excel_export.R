@@ -6,7 +6,7 @@
 #' @details
 #' `bibleRe` supports Excel export with two packages:
 #' \describe{
-#'   \item{`WriteXLS`}{This is the prefered method, but it requires a
+#'   \item{`WriteXLS`}{This is the preferred method, but it requires a
 #'   perl installation. Use [`WriteXLS::testPerl()`] to check whether perl
 #'   and all the required modules are installed. This writes formatted
 #'   Excel files with fixed first row and adjusted column width.}
@@ -98,7 +98,7 @@ bib_write_excel <- function(table, file,
 #' Install packages for Excel export
 #'
 #' Excel export with [`bib_write_excel`] uses either [`WriteXLS::WriteXLS()`]
-#' (prefered) or [`writexl::write_xlsx()`] to create Excel files. This function
+#' (preferred) or [`writexl::write_xlsx()`] to create Excel files. This function
 #' installs the required packages. `WriteXLS` is only installed, if a perl
 #' installation is found.
 #'

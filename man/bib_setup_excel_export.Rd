@@ -17,7 +17,7 @@ Excel export (invisibly).
 }
 \description{
 Excel export with \code{\link{bib_write_excel}} uses either \code{\link[WriteXLS:WriteXLS]{WriteXLS::WriteXLS()}}
-(prefered) or \code{\link[writexl:write_xlsx]{writexl::write_xlsx()}} to create Excel files. This function
+(preferred) or \code{\link[writexl:write_xlsx]{writexl::write_xlsx()}} to create Excel files. This function
 installs the required packages. \code{WriteXLS} is only installed, if a perl
 installation is found.
 }
