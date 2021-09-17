@@ -51,7 +51,7 @@ For each account, create an object with keys `"username"` and `"password"`.
 The names of the accounts (`"User1"`, ...) are arbitrary and bibleRe will use
 them to reference the accounts.
 
-By default, bibleRe looks for a file called `.biblere_paswords` in the
+By default, bibleRe looks for a file called `.biblere_passwords` in the
 home directory. However, it is possible to specify a different filename
 when starting the application.
 
