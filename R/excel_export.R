@@ -186,11 +186,12 @@ create_export_table <- function(table,
   col_names <- get_col_names(type)
   date_cols <- stringr::str_subset(names(table), "date")
 
-  # if there is a column id, remove the link
+  # remove links from columns id and author
   if ("id" %in% names(table)) {
-    table %<>% dplyr::mutate(
-      id = stringr::str_remove_all(.data$id, "<[^>]*>")
-    )
+    table %<>% dplyr::mutate(id = rm_link(.data$id))
+  }
+  if ("author" %in% names(table)) {
+    table %<>% dplyr::mutate(author = rm_link(.data$author))
   }
 
   # convert dates, rename columns
@@ -206,6 +207,10 @@ create_export_table <- function(table,
 
 }
 
+# remove link and keep link text
+rm_link <- function(x) {
+  stringr::str_remove_all(x, "<[^>]*>")
+}
 
 get_table_name <- function(type) {
   table_names <- list(documents = "Ausleihen",
