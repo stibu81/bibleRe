@@ -19,6 +19,7 @@ bib_list_documents <- function(session) {
   if (length(tab_node) > 0) {
     table <- extract_document_table(tab_node) %>%
               dplyr::mutate(link = extract_document_links(tab_node),
+                            author_search = author_search_link(.data$author),
                             chk_id = extract_checkbox_ids(tab_node))
   } else {
     table <- dplyr::tibble(
@@ -29,6 +30,7 @@ bib_list_documents <- function(session) {
       n_renewal = integer(0),
       renewal_date = as.Date(character(0)),
       link = character(0),
+      author_search = character(0),
       chk_id = character(0)
     )
   }
@@ -83,6 +85,9 @@ extract_document_links <- function(tab_node) {
 
 }
 
+author_search_link <- function(author) {
+  paste0(bib_urls$person_search, author)
+}
 
 extract_checkbox_ids <- function(tab_node) {
   xml2::xml_find_first(tab_node, "//tbody") %>%

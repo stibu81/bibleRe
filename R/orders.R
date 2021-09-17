@@ -17,7 +17,8 @@ bib_list_orders <- function(session) {
 
   if (length(tab_node) > 0) {
     table <- extract_orders_table(tab_node) %>%
-      dplyr::mutate(link = extract_document_links(tab_node))
+      dplyr::mutate(link = extract_document_links(tab_node),
+                    author_search = author_search_link(.data$author))
   } else {
     table <- dplyr::tibble(
       id = character(0),
@@ -25,7 +26,8 @@ bib_list_orders <- function(session) {
       title = character(0),
       type = character(0),
       order_date = as.Date(character(0)),
-      link = character(0)
+      link = character(0),
+      author_search = character(0)
     )
   }
 

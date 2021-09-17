@@ -70,10 +70,12 @@ prepare_table <- function(data,
     table %<>% dplyr::filter(.data$account == !!account)
   }
 
-  # convert document id to link
+  # convert document id and author to link
   if (type %in%  c("documents", "orders")) {
-    table %<>% dplyr::mutate(id = as_link(.data$id, .data$link)) %>%
-      dplyr::select(-.data$link)
+    table %<>%
+      dplyr::mutate(id = as_link(.data$id, .data$link),
+                    author = as_link(.data$author, .data$author_search)) %>%
+      dplyr::select(-.data$link, -.data$author_search)
   }
 
   table

@@ -25,6 +25,8 @@ bib_urls <- dplyr::tibble(
   notice = paste0(base_url, "search/notice?noticeNr="),
   search = paste0(base_url,
                   "search/shortview?searchField=W&searchType=Simple&searchTerm="),
+  person_search = paste0(base_url,
+                         "search/shortview?searchType=Extended&searchField=Person&searchTerm="),
   renew = paste0(base_url,
                  "account/renew?"),
   fees = paste0(base_url, "account/fees"),
