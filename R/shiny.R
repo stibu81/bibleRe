@@ -223,6 +223,7 @@ get_col_names <- function(type) {
 create_renewal_dt <- function(data) {
 
   dplyr::select(data, .data$author, .data$title, .data$due_date) %>%
+    dplyr::mutate(author = rm_link(.data$author)) %>%
     DT::datatable(
       rownames = FALSE,
       colnames = c("Autor", "Titel", "F\u00e4lligkeit"),
