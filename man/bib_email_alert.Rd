@@ -11,6 +11,7 @@ bib_email_alert(
   host,
   username,
   password,
+  from = username,
   port = 465,
   verbose = FALSE
 )
@@ -28,6 +29,11 @@ today will cause an alert message to be sent.}
 \item{host}{DNS name or IP address of the SMTP server.}
 
 \item{username, password}{username and password for the SMTP server.}
+
+\item{from}{email address to use as the sender, by default equal to
+\code{username}. In principle, you can use an arbitrary address here, but some
+email providers reject emails where the domain of the sender does not
+match the host.}
 
 \item{port}{Port that the SMTP server is listening on.}
 

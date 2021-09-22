@@ -9,6 +9,10 @@
 #' @param recipients e-mail addresses of one or several recipients.
 #' @param host DNS name or IP address of the SMTP server.
 #' @param username,password username and password for the SMTP server.
+#' @param from email address to use as the sender, by default equal to
+#'  `username`. In principle, you can use an arbitrary address here, but some
+#'  email providers reject emails where the domain of the sender does not
+#'  match the host.
 #' @param port Port that the SMTP server is listening on.
 #' @param verbose should verbose output be produced from the interaction
 #'  with the SMTP server?
@@ -23,6 +27,7 @@
 
 bib_email_alert <- function(users, n_days, recipients,
                             host, username, password,
+                            from = username,
                             port = 465,
                             verbose = FALSE) {
 
@@ -94,6 +99,7 @@ bib_email_alert <- function(users, n_days, recipients,
     # prepare message
     email <- emayili::envelope(
       to = recipients,
+      from = from,
       subject = subj,
       text = body
     )
