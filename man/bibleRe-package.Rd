@@ -6,10 +6,6 @@
 \alias{bibleRe-package}
 \title{Access Web Interface of the Public Library in Koeniz}
 \description{
-The public library of Koeniz, Switzerland, offers a
-  web interface that allows users to check their borrowed documents,
-  renew the rental period, etc. This package offers an interface
-  to use some of that functionality. It is particularly useful to manage
-  multiple accounts simultaneously.
+The public library of Koeniz, Switzerland, offers a web interface that allows users to check their borrowed documents, renew the rental period, etc. This package offers an interface to use some of that functionality. It is particularly useful to manage multiple accounts simultaneously.
 }
 \keyword{internal}

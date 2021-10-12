@@ -109,7 +109,8 @@ bib_email_alert <- function(users, n_days, recipients,
       host = host,
       port = port,
       username = username,
-      password = password
+      password = password,
+      reuse = FALSE
     )
     success <- try(smtp(email, verbose = verbose))
 
