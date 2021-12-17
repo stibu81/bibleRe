@@ -33,5 +33,5 @@ Imports:
 Suggests:
     WriteXLS (>= 6.3.0),
     writexl,
-    emayili (>= 0.6.4),
+    emayili (>= 0.7.0),
     faviconPlease
