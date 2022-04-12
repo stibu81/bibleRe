@@ -21,6 +21,10 @@ run_biblere <- function(login_data_file = "~/.biblere_passwords",
                         use_switches = FALSE,
                         launch.browser = NULL) {
 
+    rlang::check_installed(
+      c("shiny", "shinythemes", "shinyWidgets", "shinyjs", "DT")
+    )
+
     if (!file.exists(login_data_file)) {
       warning("file ", login_data_file, " does not exist.")
     }
