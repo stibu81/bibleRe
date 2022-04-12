@@ -14,6 +14,7 @@
 #'  email providers reject emails where the domain of the sender does not
 #'  match the host.
 #' @param port Port that the SMTP server is listening on.
+#' @param html Should a HTML message be sent?
 #' @param verbose should verbose output be produced from the interaction
 #'  with the SMTP server?
 #'
@@ -29,6 +30,7 @@ bib_email_alert <- function(users, n_days, recipients,
                             host, username, password,
                             from = username,
                             port = 465,
+                            html = FALSE,
                             verbose = FALSE) {
 
   rlang::check_installed("emayili")
@@ -72,36 +74,16 @@ bib_email_alert <- function(users, n_days, recipients,
       subj <- paste("bibleRe-Alert: ", sum(!logins), "fehlgeschlagene Logins")
     }
 
-    body <- paste0(
-      if (any(!logins)) {
-        paste0(
-          "WARNUNG: Fehlgeschlagene Logins f\u00fcr folgende Benutzer:\n",
-           paste(names(users)[!logins], collapse = ", "),
-          "\n\n"
-        )
-      },
-      "Nicht verl\u00e4ngerbare Dokumente ====================\n",
-      if (sum(relevant_docs$Verl. == 2) == 0) {
-        "keine\n\n"
-      } else {
-        dplyr::filter(relevant_docs, .data$Verl. >= 2) %>%
-          tibble_output()
-      },
-      "Verl\u00e4ngerbare Dokumente ========================\n",
-      if (sum(relevant_docs$Verl. < 2) == 0) {
-        "keine\n\n"
-      } else {
-        dplyr::filter(relevant_docs, .data$Verl. < 2) %>%
-          tibble_output()
-      }
-    )
+    body <- email_body(logins, relevant_docs, html)
 
     # prepare message
     email <- emayili::envelope(
       to = recipients,
       from = from,
       subject = subj,
-      text = body
+      # text and html body must be passed to different arguments
+      text = if (!html) body,
+      html = if (html) body
     )
 
     # send message
@@ -125,11 +107,78 @@ bib_email_alert <- function(users, n_days, recipients,
   return(TRUE)
 }
 
+
+# function to create email body in text or html format
+email_body <- function(logins, docs, html) {
+
+  # strings used below
+  str_log_fail <- "WARNUNG: Fehlgeschlagene Logins f\u00fcr folgende Benutzer:"
+  str_not_renew <- "Nicht verl\u00e4ngerbare Dokumente"
+  str_renew <- "Verl\u00e4ngerbare Dokumente"
+  str_none <- "keine"
+
+  if (html) {
+    rlang::check_installed("knitr")
+    paste0(
+      if (any(!logins)) {
+        paste0(
+          "<h3><font color=\"red\">", str_log_fail, "</font></h3>",
+           paste(names(logins)[!logins], collapse = ", "),
+          "<br/><br/>"
+        )
+      },
+      "<h3>", str_not_renew, "</h3>",
+      if (sum(docs$Verl. == 2) == 0) {
+        paste0(str_none, "<br/><br/>")
+      } else {
+        dplyr::filter(docs, .data$Verl. >= 2) %>%
+          tibble_html_output()
+      },
+      "<h3>", str_renew, "</h3>",
+      if (sum(docs$Verl. < 2) == 0) {
+        paste0(str_none, "<br/><br/>")
+      } else {
+        dplyr::filter(docs, .data$Verl. < 2) %>%
+          tibble_html_output()
+      }
+    )
+  } else {
+    paste0(
+      if (any(!logins)) {
+        paste0(
+          str_log_fail, "\n",
+          paste(names(logins)[!logins], collapse = ", "),
+          "\n\n"
+        )
+      },
+      str_not_renew, " ====================\n",
+      if (sum(docs$Verl. == 2) == 0) {
+        paste0(str_none, "\n\n")
+      } else {
+        dplyr::filter(docs, .data$Verl. >= 2) %>%
+          tibble_text_output()
+      },
+      str_renew, " ========================\n",
+      if (sum(docs$Verl. < 2) == 0) {
+        paste0(str_none, "\n\n")
+      } else {
+        dplyr::filter(docs, .data$Verl. < 2) %>%
+          tibble_text_output()
+      }
+    )
+  }
+}
+
+
 # convert a tibble to a character suitable for output
-tibble_output <- function(x) {
+tibble_text_output <- function(x) {
   as.data.frame(x) %>%
     print() %>%
     utils::capture.output() %>%
     paste(collapse = "\n") %>%
     paste0("\n\n")
+}
+
+tibble_html_output <- function(x) {
+  knitr::kable(x, format = "html", escape = FALSE)
 }

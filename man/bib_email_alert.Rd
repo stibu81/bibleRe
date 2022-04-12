@@ -13,6 +13,7 @@ bib_email_alert(
   password,
   from = username,
   port = 465,
+  html = FALSE,
   verbose = FALSE
 )
 }
@@ -36,6 +37,8 @@ email providers reject emails where the domain of the sender does not
 match the host.}
 
 \item{port}{Port that the SMTP server is listening on.}
+
+\item{html}{Should a HTML message be sent?}
 
 \item{verbose}{should verbose output be produced from the interaction
 with the SMTP server?}
