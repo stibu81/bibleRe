@@ -70,10 +70,11 @@ ui <- fluidPage(
           status = "primary",
           direction = "vertical",
           size = "sm",
+          individual = TRUE,
           choices = c(
-            "<i class='fa fa-book'></i> Ausleihen" = "documents",
-            "<i class='fa fa-calendar-check'></i> Reservationen" = "orders",
-            "<i class='fa fa-coins'></i> Gebühren" = "fees")
+            "<i class='fa fa-book'></i> &nbsp;Ausleihen" = "documents",
+            "<i class='fa fa-calendar-check'></i> &nbsp;Reservationen" = "orders",
+            "<i class='fa fa-coins'></i> &nbsp;Gebühren" = "fees")
         )
       } else {
         shinyWidgets::awesomeRadio(
