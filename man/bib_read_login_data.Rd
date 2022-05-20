@@ -14,7 +14,9 @@ Read a JSON file with login data for one or more
 users.
 }
 \details{
-The JSON file must have the following format:\if{html}{\out{<div class="sourceCode json">}}\preformatted{\{
+The JSON file must have the following format:
+
+\if{html}{\out{<div class="sourceCode json">}}\preformatted{\{
   "User1": \{
     "username": "123456",
     "password": "password1"
@@ -33,7 +35,9 @@ The JSON file must have the following format:\if{html}{\out{<div class="sourceCo
 A block must be included for each user and must contain
 the fields \code{username} and \code{password}. The above example is
 also contained as a file in the package. You can obtain
-the path to the file with\if{html}{\out{<div class="sourceCode r">}}\preformatted{system.file("example/biblere_passwords.json",
+the path to the file with
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{system.file("example/biblere_passwords.json",
             package = "bibleRe")
 }\if{html}{\out{</div>}}
 }

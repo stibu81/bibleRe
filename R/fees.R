@@ -5,6 +5,8 @@
 #' @return
 #' a tibble containing a table of fees
 #'
+#' @family functions to download data
+#'
 #' @export
 
 bib_list_fees <- function(session) {

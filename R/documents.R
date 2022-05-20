@@ -6,6 +6,8 @@
 #' @return
 #' a tibble containing a table of borrowed documents
 #'
+#' @family functions to download data
+#'
 #' @export
 
 bib_list_documents <- function(session) {

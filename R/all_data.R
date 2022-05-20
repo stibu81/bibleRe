@@ -37,6 +37,7 @@ bib_get_all_data <- function(users, with_progress = FALSE) {
   list(documents = bind_bib_data(all_data, "documents"),
        orders = bind_bib_data(all_data, "orders"),
        fees = bind_bib_data(all_data, "fees"),
+       watchlist = bind_bib_data(all_data, "watchlist"),
        login = !vapply(all_data, is.null, logical(1)))
 }
 
@@ -49,7 +50,8 @@ get_user_data <- function(user) {
 
   list(documents = bib_list_documents(session),
        orders = bib_list_orders(session),
-       fees = bib_list_fees(session))
+       fees = bib_list_fees(session),
+       watchlist = bib_list_watchlist(session))
 }
 
 

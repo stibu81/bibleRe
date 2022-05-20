@@ -21,7 +21,7 @@ bib_urls <- dplyr::tibble(
   base_url = paste0(domain, "WebOPAC-Koeniz/"),
   login = paste0(base_url, "account/login"),
   documents = paste0(base_url,
-                     "account/circulations?sort=Circulations.DueDate&page=1&pageSize=200"),
+                     "account/circulations?sort=Circulations.DueDate&page=1&pageSize=500"),
   notice = paste0(base_url, "search/notice?noticeNr="),
   search = paste0(base_url,
                   "search/shortview?searchField=W&searchType=Simple&searchTerm="),
@@ -31,6 +31,7 @@ bib_urls <- dplyr::tibble(
                  "account/renew?"),
   fees = paste0(base_url, "account/fees"),
   orders = paste0(base_url, "account/orders"),
+  watchlist = paste0(base_url, "watchlist?sort=Notices.Author%2CNotices.Title&page=1&pageSize=500"),
   timestamp = paste0(base_url, "handler/timestamp")
 )
 

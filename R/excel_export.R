@@ -61,7 +61,7 @@ bib_excel_method <- function() {
 #' @export
 
 bib_write_excel <- function(table, file,
-                            type = c("documents", "orders", "fees")) {
+                            type = c("documents", "orders", "fees", "watchlist")) {
 
   excel_method <- bib_excel_method()
   if (excel_method == "none") {
@@ -178,7 +178,7 @@ bib_setup_excel_export <- function(pkgs = c("WriteXLS", "writexl")) {
 
 # helper function to create table for export
 create_export_table <- function(table,
-                                type = c("documents", "orders", "fees")) {
+                                type = c("documents", "orders", "fees", "watchlist")) {
 
   type <- match.arg(type)
 
@@ -215,7 +215,8 @@ rm_link <- function(x) {
 get_table_name <- function(type) {
   table_names <- list(documents = "Ausleihen",
                       orders = "Reservationen",
-                      fees = "Geb\u00fchren")
+                      fees = "Geb\u00fchren",
+                      watchlist = "Merkliste")
   table_names[[type]]
 }
 

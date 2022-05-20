@@ -16,3 +16,10 @@ a tibble containing a table of fees
 \description{
 List Fees
 }
+\seealso{
+Other functions to download data: 
+\code{\link{bib_list_documents}()},
+\code{\link{bib_list_orders}()},
+\code{\link{bib_list_watchlist}()}
+}
+\concept{functions to download data}

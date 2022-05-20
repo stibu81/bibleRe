@@ -74,7 +74,8 @@ ui <- fluidPage(
           choices = c(
             "<i class='fa fa-book'></i> &nbsp;Ausleihen" = "documents",
             "<i class='fa fa-calendar-check'></i> &nbsp;Reservationen" = "orders",
-            "<i class='fa fa-coins'></i> &nbsp;Gebühren" = "fees")
+            "<i class='fa fa-coins'></i> &nbsp;Gebühren" = "fees",
+            "<i class='fa fa-list'></i> &nbsp;Merkliste" = "watchlist")
         )
       } else {
         shinyWidgets::awesomeRadio(
@@ -83,7 +84,8 @@ ui <- fluidPage(
           status = "primary",
           choices = c(Ausleihen = "documents",
                       Reservationen = "orders",
-                      Gebühren = "fees")
+                      Gebühren = "fees",
+                      Merkliste = "watchlist")
         )
       },
       p(

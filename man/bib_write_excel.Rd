@@ -4,7 +4,11 @@
 \alias{bib_write_excel}
 \title{Write a Table to an Excel File}
 \usage{
-bib_write_excel(table, file, type = c("documents", "orders", "fees"))
+bib_write_excel(
+  table,
+  file,
+  type = c("documents", "orders", "fees", "watchlist")
+)
 }
 \arguments{
 \item{table}{a tibble containing documents, orders, or fees as returned

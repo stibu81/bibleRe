@@ -50,7 +50,7 @@ run_biblere <- function(login_data_file = "~/.biblere_passwords",
 
 # Helper function to extract a table from the complete data
 prepare_table <- function(data,
-                          type = c("documents", "orders", "fees"),
+                          type = c("documents", "orders", "fees", "watchlist"),
                           due_date = as.Date("2100-01-01"),
                           account = "alle",
                           only_non_renwable = FALSE) {
@@ -83,6 +83,14 @@ prepare_table <- function(data,
       dplyr::select(-.data$link, -.data$author_search)
   }
 
+  # there is no link to the document in the watchlist because it actually
+  # points to the item in the watchlist, which only works with login
+  if (type ==  "watchlist") {
+    table %<>%
+      dplyr::mutate(author = as_link(.data$author, .data$author_search)) %>%
+      dplyr::select(-.data$author_search)
+  }
+
   table
 
 }
@@ -96,6 +104,7 @@ as_link <- function(text, link) {
 
 # date input: set maximum date and highlight all dates where loans run out
 prepare_date_input <- function(data, session, account, set_max_date = FALSE) {
+
   due_dates <- prepare_table(
       data,
       type = "documents",
@@ -116,7 +125,7 @@ prepare_date_input <- function(data, session, account, set_max_date = FALSE) {
 
 # create datatable with DT
 create_datatable <- function(table,
-                             type = c("documents", "orders", "fees"),
+                             type = c("documents", "orders", "fees", "watchlist"),
                              select_style = c("multi", "os")) {
 
   type <- match.arg(type)
@@ -208,7 +217,8 @@ create_datatable <- function(table,
 get_hidden_cols <- function(type) {
   hidden_cols <- list(documents = c("renewal_date", "chk_id", "due"),
                       orders = c(),
-                      fees = c())
+                      fees = c(),
+                      watchlist = c())
   hidden_cols[[type]]
 }
 
@@ -220,7 +230,10 @@ get_col_names <- function(type) {
                     orders = c("Konto", "Exemplar", "Autor", "Titel",
                                "Abholart", "Bestelldatum"),
                     fees = c("Konto", "Art der Geb\u00fchr", "Datum",
-                             "Betrag", "Exemplar", "Notiz"))
+                             "Betrag", "Exemplar", "Notiz"),
+                    watchlist = c("Konto", "Autor", "Titel",
+                                  "Erscheinungsjahr", "Dokumentart",
+                                  "Alter", "Bibliothek"))
   col_names[[type]]
 }
 

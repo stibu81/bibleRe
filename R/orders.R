@@ -5,6 +5,8 @@
 #' @return
 #' a tibble containing a table of orders
 #'
+#' @family functions to download data
+#'
 #' @export
 
 bib_list_orders <- function(session) {
