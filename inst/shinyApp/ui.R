@@ -33,7 +33,7 @@ ui <- fluidPage(
             value = Sys.Date() + getOption("biblere_n_due_days"),
             minDate = Sys.Date(),
             maxDate = Sys.Date() + 60,
-            dateFormat = "dd.mm.yyyy",
+            dateFormat = "dd.MM.yyyy",
             language = "de",
             addon = "none",
             autoClose = TRUE,
