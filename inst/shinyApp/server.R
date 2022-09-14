@@ -130,7 +130,7 @@ server <- function(input, output, session) {
     }
     actionButton("start_search",
                  "Suche",
-                 icon = icon("search"),
+                 icon = icon("magnifying-glass"),
                  class = "btn btn-primary",
                  onclick = script)
   })

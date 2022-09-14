@@ -21,7 +21,7 @@ ui <- fluidPage(
         column(4,
           actionButton("reload",
                        label = NULL,
-                       icon = icon("redo"),
+                       icon = icon("arrow-rotate-right"),
                        class = "btn btn-primary"))
       ),
       p(tags$b("Rückgabe bis:")),
@@ -90,7 +90,7 @@ ui <- fluidPage(
       },
       p(
         actionButton("renew", "Verlängern",
-                     icon = icon("redo"),
+                     icon = icon("arrow-rotate-right"),
                      class = "btn btn-primary"),
         downloadButton("download_documents",
                        "Speichern",
