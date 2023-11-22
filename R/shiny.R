@@ -80,7 +80,7 @@ prepare_table <- function(data,
     table %<>%
       dplyr::mutate(id = as_link(.data$id, .data$link),
                     author = as_link(.data$author, .data$author_search)) %>%
-      dplyr::select(-.data$link, -.data$author_search)
+      dplyr::select(-"link", -"author_search")
   }
 
   # there is no link to the document in the watchlist because it actually
@@ -88,7 +88,7 @@ prepare_table <- function(data,
   if (type ==  "watchlist") {
     table %<>%
       dplyr::mutate(author = as_link(.data$author, .data$author_search)) %>%
-      dplyr::select(-.data$author_search)
+      dplyr::select(-"author_search")
   }
 
   table
@@ -239,7 +239,7 @@ get_col_names <- function(type) {
 
 create_renewal_dt <- function(data) {
 
-  dplyr::select(data, .data$author, .data$title, .data$due_date) %>%
+  dplyr::select(data, "author", "title", "due_date") %>%
     dplyr::mutate(author = rm_link(.data$author)) %>%
     DT::datatable(
       rownames = FALSE,
