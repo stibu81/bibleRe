@@ -1,8 +1,12 @@
+title <- "bibleRe: Zugang zum Web Interface der K\u00f6nizer Bibliotheken"
+
 ui <- fluidPage(
 
-  theme = shinythemes::shinytheme("lumen"),
+  theme = bslib::bs_theme(version = 5, preset = "lumen", font_scale = 0.8),
 
-  titlePanel("bibleRe: Zugang zum Web Interface der K\u00f6nizer Bibliotheken"),
+  # bs version 5 adds no padding on top of title => add some padding here
+  titlePanel(div(title,  style={'padding-top: 20px'}),
+             windowTitle = title),
 
   shinyjs::useShinyjs(),
 

@@ -176,7 +176,7 @@ create_datatable <- function(table,
         # CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/).
         initComplete = DT::JS(
           "function() {",
-            "$('.dt-buttons button').removeClass('dt-button');",
+            "$('.dt-buttons button').removeClass('dt-button').removeClass('btn-secondary');",
             # Modified to also change class of search field.
             "$('div.dataTables_filter input').addClass('form-control');",
           "}")
