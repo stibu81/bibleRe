@@ -8,6 +8,7 @@ run_biblere(
   login_data_file = "~/.biblere_passwords",
   n_due_days = 7,
   use_switches = FALSE,
+  colour_mode = NULL,
   launch.browser = NULL
 )
 }
@@ -22,6 +23,10 @@ show documents that are due at most \code{n_due_days} days from today.}
 
 \item{use_switches}{logical; set to \code{TRUE} in order to use a design
 that uses switches and buttons instead of check boxes and radio buttons.}
+
+\item{colour_mode}{The initial colour mode to be used. By default, the
+colour mode set in the system is used. Set to \code{"light"} or \code{"dark"} to
+enforce a particular initial mode.}
 
 \item{launch.browser}{logical, if \code{TRUE}, the application
 is opened in the system's default browser, if \code{FALSE},

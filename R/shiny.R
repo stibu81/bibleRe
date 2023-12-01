@@ -8,6 +8,9 @@
 #'  show documents that are due at most `n_due_days` days from today.
 #' @param use_switches logical; set to `TRUE` in order to use a design
 #'  that uses switches and buttons instead of check boxes and radio buttons.
+#' @param colour_mode The initial colour mode to be used. By default, the
+#'  colour mode set in the system is used. Set to `"light"` or `"dark"` to
+#'  enforce a particular initial mode.
 #' @param launch.browser logical, if \code{TRUE}, the application
 #'  is opened in the system's default browser, if \code{FALSE},
 #'  no browser is started. If the argument is omitted, the value
@@ -19,6 +22,7 @@
 run_biblere <- function(login_data_file = "~/.biblere_passwords",
                         n_due_days = 7,
                         use_switches = FALSE,
+                        colour_mode = NULL,
                         launch.browser = NULL) {
 
     rlang::check_installed(
@@ -38,6 +42,12 @@ run_biblere <- function(login_data_file = "~/.biblere_passwords",
 
     options(biblere_n_due_days = n_due_days,
             biblere_use_switches = use_switches)
+
+    if (!is.null(colour_mode) && !colour_mode %in% c("light", "dark")) {
+      warning("colour_mode must be one of \"light\" or \"dark\".")
+      colour_mode <- NULL
+    }
+    options(biblere_colour_mode = colour_mode)
 
     if (is.null(launch.browser)) {
         launch.browser <- getOption("shiny.launch.browser", interactive())

@@ -104,9 +104,14 @@ ui <- fluidPage(
                 tags$b("Katalogsuche:")),
       uiOutput("search_button"),
       br(),
-      actionLink("about",
-                 "Über bibleRe",
-                 class = "btn text-info"),
+      fluidRow(
+        column(10,
+          actionLink("about",
+                     "Über bibleRe",
+                     class = "btn text-info")
+        ),
+        column(2, bslib::input_dark_mode(mode = getOption("biblere_colour_mode")))
+      ),
       width = 3
     ),
 
