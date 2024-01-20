@@ -36,8 +36,8 @@ bib_list_fees <- function(session) {
 
 extract_fees_table <- function(tab_node) {
 
-  rvest::html_table(tab_node) %>%
-    dplyr::as_tibble() %>%
+  tab_node  %>%
+    flex_html_table() %>%
     dplyr::rename(type = "Art der Geb\u00fchr",
                   date = "Erzeugungsdatum",
                   amount = "Betrag",

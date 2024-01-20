@@ -43,9 +43,8 @@ bib_list_watchlist <- function(session) {
 
 extract_watchlist_table <- function(tab_node) {
 
-  replace_br(tab_node)
-  table <- rvest::html_table(tab_node)
-  table <- table[, names(table) != ""]  %>%
+  table <- tab_node  %>%
+    flex_html_table() %>%
     dplyr::as_tibble() %>%
     dplyr::rename(author_title = "Autor / Titel",
                   year = "Jahr",

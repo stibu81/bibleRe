@@ -40,9 +40,8 @@ bib_list_orders <- function(session) {
 
 extract_orders_table <- function(tab_node) {
 
-  replace_br(tab_node)
-  table <- rvest::html_table(tab_node)
-  table[, names(table) != ""]  %>%
+  tab_node  %>%
+    flex_html_table() %>%
     dplyr::as_tibble() %>%
     dplyr::rename(id = "Exemplarnr.",
                   author_title = "Autor / Titel",

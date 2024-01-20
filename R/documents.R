@@ -40,22 +40,11 @@ bib_list_documents <- function(session) {
   table
 }
 
-# replace HTML line breaks by "\n"
-replace_br <- function(node) {
-  # source: https://stackoverflow.com/a/46755666/4303162
-  # user: hrbrmstr
-  xml2::xml_find_all(node, ".//br") %>%
-    xml2::xml_add_sibling("p", "\n")
-  xml2::xml_find_all(node, ".//br") %>%
-    xml2::xml_remove()
-}
 
 extract_document_table <- function(tab_node) {
 
-  replace_br(tab_node)
-  table <- rvest::html_table(tab_node)
-  table[, names(table) != ""]  %>%
-    dplyr::as_tibble() %>%
+  tab_node  %>%
+    flex_html_table() %>%
     dplyr::rename(id = "Exemplarnr.",
                   author_title = "Autor / Titel",
                   due_date = "F\u00e4lligkeitsdatum",
