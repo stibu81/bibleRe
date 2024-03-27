@@ -211,9 +211,10 @@ create_datatable <- function(table,
   # only for documents: use red text if due date is passed
   if (type == "documents") {
     data_table %<>% DT::formatStyle(
-      "due",
-      target = "row",
-      color = DT::styleEqual(c(FALSE, TRUE), c("black", "red"))
+      "due_date",
+      valueColumns = "due",
+      target = "cell",
+      color = DT::styleEqual(c(FALSE, TRUE), c(NA, "red"))
     )
   }
 
