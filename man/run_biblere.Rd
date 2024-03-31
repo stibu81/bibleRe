@@ -14,7 +14,7 @@ run_biblere(
 }
 \arguments{
 \item{login_data_file}{character giving the full path to
-a file containing the login data. So \code{\link{bib_read_login_data}} for
+a file containing the login data. See \code{\link{bib_read_login_data}} for
 more information on the format of the file.}
 
 \item{n_due_days}{integer giving the default for the selection

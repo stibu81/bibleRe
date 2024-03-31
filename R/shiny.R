@@ -1,7 +1,7 @@
 #' Run the application
 #'
 #' @param login_data_file character giving the full path to
-#'  a file containing the login data. So [`bib_read_login_data`] for
+#'  a file containing the login data. See [`bib_read_login_data`] for
 #'  more information on the format of the file.
 #' @param n_due_days integer giving the default for the selection
 #'  of the date used to filter due dates. By default, the app will
