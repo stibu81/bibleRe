@@ -4,7 +4,10 @@
 \alias{bib_check}
 \title{Check Whether the Login Page Is Reachable}
 \usage{
-bib_check()
+bib_check(silent = TRUE)
+}
+\arguments{
+\item{silent}{logical: should error messages be suppressed?}
 }
 \value{
 logical indicating whether the login page could be reached

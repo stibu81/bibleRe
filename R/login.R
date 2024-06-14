@@ -148,13 +148,15 @@ bib_encrypt <- function(password) {
 #' Check whether the login page can be reached. If this fails, either there is
 #' no internet connection or the server of the library is down.
 #'
+#' @param silent logical: should error messages be suppressed?
+#'
 #' @return
 #' logical indicating whether the login page could be reached
 #'
 #' @export
 
-bib_check <- function() {
-  session <- try(rvest::session(bib_urls$login))
+bib_check <- function(silent = TRUE) {
+  session <- try(rvest::session(bib_urls$login), silent = silent)
   !(inherits(session, "try-error") || session$response$status_code != 200)
 }
 
