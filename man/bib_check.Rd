@@ -2,7 +2,7 @@
 % Please edit documentation in R/login.R
 \name{bib_check}
 \alias{bib_check}
-\title{Check that Login Page is Reachable}
+\title{Check Whether the Login Page Is Reachable}
 \usage{
 bib_check()
 }
@@ -10,6 +10,6 @@ bib_check()
 logical indicating whether the login page could be reached
 }
 \description{
-Check that the login page can be reached. If this fails, either there is
-no internet connection or the server of library is down.
+Check whether the login page can be reached. If this fails, either there is
+no internet connection or the server of the library is down.
 }

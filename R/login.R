@@ -22,7 +22,7 @@
 
 bib_login <- function(username, password) {
 
-  # is username is a list, checkt that it contains username and passwort
+  # is username is a list, check that it contains username and password
   if (is.list(username)) {
     if (all(c("username", "password") %in% names(username))) {
       password <- username$password
@@ -143,10 +143,10 @@ bib_encrypt <- function(password) {
 }
 
 
-#' Check that Login Page is Reachable
+#' Check Whether the Login Page Is Reachable
 #'
-#' Check that the login page can be reached. If this fails, either there is
-#' no internet connection or the server of library is down.
+#' Check whether the login page can be reached. If this fails, either there is
+#' no internet connection or the server of the library is down.
 #'
 #' @return
 #' logical indicating whether the login page could be reached

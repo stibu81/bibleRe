@@ -24,7 +24,7 @@ server <- function(input, output, session) {
     if (length(users) > 0 && (bc <- bib_check())) {
       data <- bib_get_all_data(users, with_progress = TRUE)
 
-      # check sucess of login. Warn in case of failure and remove the users from
+      # check success of login. Warn in case of failure and remove the users from
       # the list
       if (!all(data$login)) {
         failed_logins <- names(data$login)[!data$login]
@@ -64,7 +64,7 @@ server <- function(input, output, session) {
         data
       }
     } else {
-      # on reason to end up here is that bib_check() failed. If so, show message.
+      # one reason to end up here is that bib_check() failed. If so, show message.
       if (!bc) bibleRe:::show_no_connection()
       NULL
     }
