@@ -35,6 +35,11 @@ bib_email_alert <- function(users, n_days, recipients,
 
   rlang::check_installed("emayili")
 
+  if (!bib_check()) {
+    warning("connection failed")
+    return(FALSE)
+  }
+
   data <- bib_get_all_data(users)
   docs <- data$documents
   logins <- data$login
