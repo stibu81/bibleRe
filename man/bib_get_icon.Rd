@@ -13,7 +13,3 @@ not end with ".ico", the ending is appended.}
 \description{
 Download the Favicon from the Library's Website
 }
-\details{
-This requires the package \code{faviconPlease} to be installed. Install it
-with \code{install.packages('faviconPlease')}.
-}
