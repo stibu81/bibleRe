@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# bibleRe <a href="https://koenizerbibliotheken.ch"><img src="https://icons.duckduckgo.com/ip3/koenizerbibliotheken.ch.ico" align="right" height="110" /></a>
+# bibleRe <a href="https://koenizerbibliotheken.ch"><img src="https://koenizerbibliotheken.ch/de/assets/app-icons/app-icon-72.png" align="right" height="110" /></a>
 
 ## Overview
 
@@ -80,15 +80,15 @@ run bibleRe in a browser window.
 In addition to `launch.browser`, the function has the following
 arguments:
 
--   `login_data_file`: full path to a file containing the login data. By
-    default, bibleRe looks for a file called `.biblere_paswords` in the
-    home directory.
--   `n_due_days`: on startup, bibleRe will only show documents that need
-    to be returned within `n_due_days` days from today. The default
-    value is 7.
--   `use_switches`: set this to `TRUE` in order to use a design that
-    uses switches and buttons instead of check boxes and radio buttons.
-    The default value is `FALSE`.
+- `login_data_file`: full path to a file containing the login data. By
+  default, bibleRe looks for a file called `.biblere_paswords` in the
+  home directory.
+- `n_due_days`: on startup, bibleRe will only show documents that need
+  to be returned within `n_due_days` days from today. The default value
+  is 7.
+- `use_switches`: set this to `TRUE` in order to use a design that uses
+  switches and buttons instead of check boxes and radio buttons. The
+  default value is `FALSE`.
 
 ## Icon
 

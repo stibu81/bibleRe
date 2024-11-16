@@ -4,7 +4,7 @@ output: github_document
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# bibleRe <a href="https://koenizerbibliotheken.ch"><img src="https://icons.duckduckgo.com/ip3/koenizerbibliotheken.ch.ico" align="right" height="110" /></a>
+# bibleRe <a href="https://koenizerbibliotheken.ch"><img src="`r bibleRe:::get_favicon_url()`" align="right" height="110" /></a>
 
 ## Overview
 
