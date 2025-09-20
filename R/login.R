@@ -73,7 +73,7 @@ bib_login <- function(username, password) {
 
 bib_logout <- function(session) {
   if (is_logged_in(session)) {
-    session$click("a.btn[href*='logout']")
+    jump_to(session, bib_urls$logout)
     # wait to make sure that the logout is complete
     Sys.sleep(0.1)
   }
