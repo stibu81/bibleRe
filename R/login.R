@@ -184,12 +184,12 @@ bib_check <- function(silent = TRUE) {
   !(inherits(session, "try-error") || session$response$status_code != 200)
 }
 
-
-get_logout_button <- function(session) {
-  rvest::html_elements(session, css = "a.btn[href*='logout']")
+get_account_box <- function(session) {
+  # this tag exists ONLY if a user is logged in
+  rvest::html_element(session, css = "div.wo-account-btn-text")
 }
 
 is_logged_in <- function(session) {
-  length(get_logout_button(session)) > 0
+  length(get_account_box(session)) > 0
 }
 
