@@ -13,11 +13,11 @@
 
 bib_list_watchlist <- function(session) {
 
-  page <- rvest::session_jump_to(session, bib_urls$watchlist)
+  jump_to(session, bib_urls$watchlist)
 
   # extract the node with the document table
-  tab_node <- page %>%
-    rvest::html_element(xpath = "//table[@class='table wo-grid-table']")
+  tab_node <- session %>%
+    rvest::html_element(css = "table.wo-grid-table")
 
   if (length(tab_node) > 0) {
     table <- extract_watchlist_table(tab_node) %>%
