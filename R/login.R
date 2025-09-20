@@ -47,7 +47,7 @@ bib_login <- function(username, password) {
   session$click(css = "button#btn-login")
 
   # wait to make sure that login is complete
-  Sys.sleep(0.1)
+  Sys.sleep(0.2)
 
   if (!is_logged_in(session)) {
     warning("login failed")
@@ -79,7 +79,7 @@ bib_logout <- function(session) {
   if (is_logged_in(session)) {
     jump_to(session, bib_urls$logout)
     # wait to make sure that the logout is complete
-    Sys.sleep(0.1)
+    Sys.sleep(0.2)
   }
 }
 
