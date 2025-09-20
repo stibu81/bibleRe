@@ -36,3 +36,10 @@ bib_urls <- dplyr::tibble(
 )
 
 globalVariables(".")
+
+# dependencies chromote and R6 are never used in the code => use them here
+# to prevent complaints from R CMD check
+imports_dummy <- function() {
+  chromote::chrome_versions_list
+  R6::R6Class
+}
