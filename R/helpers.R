@@ -22,3 +22,15 @@ set_language <- function(session, language = c("de", "en", "fr")) {
 
   invisible(NULL)
 }
+
+
+# a function that waits until an function evaluates to TRUE
+# the function is run within a try block and failure  counts as FALSE
+# timeout is the maximal waiting time in seconds
+wait_until <- function(fun, timeout = 5) {
+  start <- lubridate::now()
+  while (!isTRUE(try(fun(), silent = TRUE)) &&
+         difftime(lubridate::now(), start, units = "secs") < timeout) {
+    Sys.sleep(0.05)
+  }
+}

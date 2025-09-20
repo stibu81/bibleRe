@@ -47,14 +47,14 @@ bib_login <- function(username, password) {
   session$click(css = "button#btn-login")
 
   # wait to make sure that login is complete
-  Sys.sleep(0.2)
+  wait_until(\() is_logged_in(session))
 
   if (!is_logged_in(session)) {
-    warning("login failed")
+    warning("login failed for user ", username)
     return(session)
   }
 
-  message("connection successful for user ", username)
+  message("login successful for user ", username)
 
   # bibleRe needs the session to be in German for the
   # extraction of the data to work
@@ -79,7 +79,7 @@ bib_logout <- function(session) {
   if (is_logged_in(session)) {
     jump_to(session, bib_urls$logout)
     # wait to make sure that the logout is complete
-    Sys.sleep(0.2)
+    wait_until(\() !is_logged_in(session))
   }
 }
 
@@ -194,6 +194,6 @@ get_account_box <- function(session) {
 }
 
 is_logged_in <- function(session) {
-  length(get_account_box(session)) > 0
+  isTRUE(try(length(get_account_box(session)) > 0, silent = TRUE))
 }
 
