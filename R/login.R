@@ -37,22 +37,46 @@ bib_login <- function(username, password) {
     return(NULL)
   }
 
-  session <- rvest::session(bib_urls$login)
-  form <- rvest::html_form(session)[[2]]
-  filled_form <- rvest::html_form_set(form,
-                                      Username = username,
-                                      Password = bib_encrypt(password))
-  session <- rvest::session_submit(session, filled_form)
+  session <- rvest::read_html_live(bib_urls$login)
 
-  # if the urls associated with the session is still the same,
-  # login has not worked. => issue a warning
-  if (session$response$status_code != 200 || session$url == bib_urls$login) {
+  # make sure that no user is logged in
+  bib_logout(session)
+
+  session$type(username, css = "input#wo-account-login-username")
+  session$type(password, css = "input#wo-account-login-password")
+  session$click(css = "button#btn-login")
+
+  # wait to make sure that login is complete
+  Sys.sleep(0.1)
+
+  if (!is_logged_in(session)) {
     warning("login failed")
-    return(NULL)
+    return(session)
   }
 
-  session
+  message("connection successful for user ", username)
 
+  session
+}
+
+
+#' Log out a running session
+#'
+#' Log out from a running session with the web interface.
+#'
+#' @param session the session object of the session with the web interface.
+#'
+#' @returns
+#' x invisibly. The `session` is modified as a side effect.
+#'
+#' @export
+
+bib_logout <- function(session) {
+  if (is_logged_in(session)) {
+    session$click("a.btn[href*='logout']")
+    # wait to make sure that the logout is complete
+    Sys.sleep(0.1)
+  }
 }
 
 
@@ -161,4 +185,11 @@ bib_check <- function(silent = TRUE) {
 }
 
 
+get_logout_button <- function(session) {
+  rvest::html_elements(session, css = "a.btn[href*='logout']")
+}
+
+is_logged_in <- function(session) {
+  length(get_logout_button(session)) > 0
+}
 
