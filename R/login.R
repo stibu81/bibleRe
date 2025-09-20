@@ -56,6 +56,10 @@ bib_login <- function(username, password) {
 
   message("connection successful for user ", username)
 
+  # bibleRe needs the session to be in German for the
+  # extraction of the data to work
+  set_language(session, "de")
+
   session
 }
 

@@ -22,6 +22,7 @@ Imports:
     lubridate,
     rlang,
     tidyr,
+    glue,
     xml2,
     dplyr,
     magrittr,
