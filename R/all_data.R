@@ -19,18 +19,20 @@ bib_get_all_data <- function(users, with_progress = FALSE) {
     if (with_progress && shiny::isRunning()) {
       shiny::withProgress({
         lapply(seq_along(users), function(i) {
-          name <- names(users)[i]
-          msg <- paste0(name, " (", i, "/", length(users), ")")
-          shiny::incProgress(0.1, detail = msg)
-          userdata <- get_user_data(users[[i]])
-          shiny::incProgress(0.9, detail = "OK")
+          base_msg <- glue("{names(users)[i]} ({i}/{length(users)})")
+          shiny::incProgress(0.1, detail = glue("{base_msg}: Einloggen ..."))
+          session <- bib_login(users[[i]])
+          shiny::incProgress(0.5, detail = glue("{base_msg}: Herunterladen ..."))
+          userdata <- get_all_data(session)
+          shiny::incProgress(0.4, detail = glue("{base_msg}: Fertig!"))
           userdata
         })
       },
-      message = "Userdaten herunterladen",
-      max = length(users))
+      message = "Daten herunterladen",
+      max = length(users),
+      value = 0)
     } else {
-      lapply(users, get_user_data)
+      lapply(users, \(user) get_all_data(bib_login(user)))
     }
   names(all_data) <- names(users)
 
@@ -43,11 +45,8 @@ bib_get_all_data <- function(users, with_progress = FALSE) {
 
 
 # helper function to get all the data for a single user
-get_user_data <- function(user) {
-
-  session <- bib_login(user$username, user$password)
+get_all_data <- function(session) {
   if (is.null(session)) return(NULL)
-
   list(documents = bib_list_documents(session),
        orders = bib_list_orders(session),
        fees = bib_list_fees(session),
