@@ -42,16 +42,29 @@ bib_login <- function(username, password) {
   # make sure that no user is logged in
   bib_logout(session)
 
-  session$type(username, css = "input#wo-account-login-username")
-  session$type(password, css = "input#wo-account-login-password")
-  session$click(css = "button#btn-login")
+  # wait until the login form is available
+  success <- wait_until(
+    \() length(rvest::html_element(session, "input#wo-account-login-username")) > 0
+  )
 
-  # wait to make sure that login is complete
-  wait_until(\() is_logged_in(session))
+  if (success) {
+    tryCatch({
+        session$type(username, css = "input#wo-account-login-username")
+        session$type(password, css = "input#wo-account-login-password")
+        session$click(css = "button#btn-login")
 
-  if (!is_logged_in(session)) {
+        # wait to make sure that login is complete
+        sucess <- wait_until(\() is_logged_in(session))
+      },
+      error = function(e) {
+        warning("failed to fill in login form for user ", username)
+      }
+    )
+  }
+
+  if (!success) {
     warning("login failed for user ", username)
-    return(session)
+    return(NULL)
   }
 
   message("login successful for user ", username)
