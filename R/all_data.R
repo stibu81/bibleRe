@@ -47,10 +47,12 @@ bib_get_all_data <- function(users, with_progress = FALSE) {
 # helper function to get all the data for a single user
 get_all_data <- function(session) {
   if (is.null(session)) return(NULL)
-  list(documents = bib_list_documents(session),
+  out <- list(documents = bib_list_documents(session),
        orders = bib_list_orders(session),
        fees = bib_list_fees(session),
        watchlist = bib_list_watchlist(session))
+  session$session$close()
+  out
 }
 
 
