@@ -28,7 +28,8 @@ Imports:
     magrittr,
     stringr,
     readr,
-    digest
+    digest,
+    logger
 Suggests:
     WriteXLS (>= 6.3.0),
     writexl,

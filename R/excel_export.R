@@ -125,7 +125,7 @@ bib_setup_excel_export <- function(pkgs = c("WriteXLS", "writexl")) {
 
     # install WriteXLS if it is missing
     if (rlang::is_installed("WriteXLS")) {
-      message("Package WriteXLS is already installed. Check perl setup.")
+      message("Package WriteXLS is already installed. Checking perl setup.")
     } else {
       # check whether perl is available
       if (nzchar(Sys.which("perl"))) {

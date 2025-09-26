@@ -25,6 +25,8 @@ run_biblere <- function(login_data_file = "~/.biblere_passwords",
                         colour_mode = NULL,
                         launch.browser = NULL) {
 
+    logger::log_debug("running the bibleRe Shiny app")
+
     rlang::check_installed(
       c("shiny", "shinythemes", "shinyWidgets", "shinyjs", "DT")
     )

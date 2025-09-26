@@ -34,11 +34,13 @@ wait_until <- function(fun, timeout = 5) {
   start <- lubridate::now()
   while (TRUE) {
     is_true <- isTRUE(try(fun(), silent = TRUE))
-    dt <- difftime(lubridate::now(), start, units = "secs")
+    dt <- round(difftime(lubridate::now(), start, units = "secs"), 1)
     if (dt > timeout) {
+      logger::log_trace("wait_until() endeded with failure after {dt} seconds")
       return(FALSE)
     }
     if (is_true) {
+      logger::log_trace("wait_until() endeded with success after {dt} seconds")
       # for some reason, running fun() right after wait_until() sometimes fails.
       # this happens less if we wait a little more here.
       Sys.sleep(0.05)

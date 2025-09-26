@@ -13,9 +13,11 @@
 
 bib_list_watchlist <- function(session) {
 
+  logger::log_debug("jump to watchlist page")
   jump_to(session, bib_urls$watchlist)
 
-  # extract the node with the document table
+  # extract the node with the watchlist table
+  logger::log_debug("extract the watchlist table")
   tab_node <- session %>%
     rvest::html_element(css = "table.wo-grid-table")
 
@@ -37,6 +39,7 @@ bib_list_watchlist <- function(session) {
     )
   }
 
+  logger::log_debug("watchlist table completed")
   table
 }
 

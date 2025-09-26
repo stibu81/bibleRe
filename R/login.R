@@ -32,21 +32,29 @@ bib_login <- function(username, password) {
     }
   }
 
+  logger::log_debug("checking the connection")
   if (!bib_check()) {
     warning("connection failed")
     return(NULL)
   }
 
+  logger::log_debug("logging in user {username}")
   session <- rvest::read_html_live(bib_urls$base_url)
+  logger::log_debug("jump to the login page")
+  # use jump_to() to load the login page to ensure that it loads correctly
   jump_to(session, bib_urls$login)
 
   # make sure that no user is logged in
+  logger::log_debug("make sure no user is logged in")
   bib_logout(session)
   jump_to(session, bib_urls$login)
 
   tryCatch({
+      logger::log_debug("type in username")
       session$type(username, css = "input#wo-account-login-username")
+      logger::log_debug("type in password")
       session$type(password, css = "input#wo-account-login-password")
+      logger::log_debug("click login button")
       session$click(css = "button#btn-login")
     },
     error = function(e) {
@@ -54,9 +62,12 @@ bib_login <- function(username, password) {
     }
   )
 
+  logger::log_debug("reload login page")
   jump_to(session, bib_urls$login)
+  logger::log_debug("wait on successful login")
+  login_success <- wait_until(is_logged_in(session), timeout = 10)
 
-  if (!is_logged_in(session)) {
+  if (!login_success) {
     warning("login failed for user ", username)
     return(NULL)
   }
@@ -65,8 +76,10 @@ bib_login <- function(username, password) {
 
   # bibleRe needs the session to be in German for the
   # extraction of the data to work
+  logger::log_debug("set language to 'de'")
   set_language(session, "de")
 
+  logger::log_debug("login process completed")
   session
 }
 
@@ -84,6 +97,7 @@ bib_login <- function(username, password) {
 
 bib_logout <- function(session) {
   if (is_logged_in(session)) {
+    logger::log_debug("logging out")
     jump_to(session, bib_urls$logout)
   }
 }
@@ -128,6 +142,8 @@ bib_logout <- function(session) {
 #' @export
 
 bib_read_login_data <- function(file) {
+
+  logger::log_debug("reading login data from {file}")
 
   if (!file.exists(file)) {
     warning("File ", file, " does not exist.")

@@ -11,9 +11,11 @@
 
 bib_list_fees <- function(session) {
 
+  logger::log_debug("jump to fees page")
   jump_to(session, bib_urls$fees)
 
   # extract the node with the fees table
+  logger::log_debug("extract the fees table")
   tab_node <- session %>%
     rvest::html_element(css = "table.wo-grid-table")
 
@@ -29,6 +31,7 @@ bib_list_fees <- function(session) {
     )
   }
 
+  logger::log_debug("fees table completed")
   table
 }
 

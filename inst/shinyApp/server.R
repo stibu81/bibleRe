@@ -44,8 +44,6 @@ server <- function(input, output, session) {
                         "select_account",
                         choices = choices,
                         selected = choices[1])
-      message("Getting data for user(s) ",
-              paste(names(users), collapse = ", "))
 
       # if this is a reload after a renewal, check that renewal
       # was successful by checking that all the renewed documents

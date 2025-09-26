@@ -13,6 +13,8 @@
 
 bib_get_all_data <- function(users, with_progress = FALSE) {
 
+  logger::log_debug("downloading all data for users {names(users)}")
+
   # if running from a shiny app and requested,
   # show progress indicator
   all_data <-
@@ -48,9 +50,9 @@ bib_get_all_data <- function(users, with_progress = FALSE) {
 get_all_data <- function(session) {
   if (is.null(session)) return(NULL)
   out <- list(documents = bib_list_documents(session),
-       orders = bib_list_orders(session),
-       fees = bib_list_fees(session),
-       watchlist = bib_list_watchlist(session))
+              orders = bib_list_orders(session),
+              fees = bib_list_fees(session),
+              watchlist = bib_list_watchlist(session))
   session$session$close()
   out
 }

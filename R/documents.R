@@ -12,9 +12,11 @@
 
 bib_list_documents <- function(session) {
 
+  logger::log_debug("jump to documents page")
   jump_to(session, bib_urls$documents)
 
   # extract the node with the document table
+  logger::log_debug("extract the documents table")
   tab_node <- session %>%
     rvest::html_element(css = "table.wo-grid-table")
 
@@ -37,6 +39,7 @@ bib_list_documents <- function(session) {
     )
   }
 
+  logger::log_debug("documents table completed")
   table
 }
 

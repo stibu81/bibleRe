@@ -45,3 +45,9 @@ imports_dummy <- function() {
   chromote::chrome_versions_list
   R6::R6Class
 }
+
+
+.onLoad <- function(libname, pkgname) {
+  logger::log_formatter(logger::formatter_cli)
+  logger::log_debug("logging with logger...")
+}
