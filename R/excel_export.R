@@ -65,7 +65,7 @@ bib_write_excel <- function(table, file,
 
   excel_method <- bib_excel_method()
   if (excel_method == "none") {
-    warning("Excel export is not possible on this system.")
+    cli::cli_warn(c("x" = "Excel export is not possible on this system."))
     return(FALSE)
   }
 
@@ -86,8 +86,9 @@ bib_write_excel <- function(table, file,
       magrittr::set_names(get_table_name(type)) %>%
       writexl::write_xlsx(file)
   } else {
-    warning("Invalid output from bib_excel_method(): ",
-            excel_method)
+    cli::cli_warn(
+      c("x" = "Invalid output from bib_excel_method(): {.val {excel_method}}")
+    )
     return(FALSE)
   }
 
@@ -125,14 +126,16 @@ bib_setup_excel_export <- function(pkgs = c("WriteXLS", "writexl")) {
 
     # install WriteXLS if it is missing
     if (rlang::is_installed("WriteXLS")) {
-      message("Package WriteXLS is already installed. Checking perl setup.")
+      cli::cli_alert_info("Package WriteXLS is already installed.")
     } else {
       # check whether perl is available
       if (nzchar(Sys.which("perl"))) {
-        message("Installing WriteXLS ...")
+        cli::cli_alert_info("Installing WriteXLS ...")
         utils::install.packages("WriteXLS")
       } else {
-        message("No Perl installation found, WriteXLS will not be installed.")
+        cli::cli_alert_warning(
+          "No Perl installation found, WriteXLS will not be installed."
+        )
       }
     }
 
@@ -141,7 +144,7 @@ bib_setup_excel_export <- function(pkgs = c("WriteXLS", "writexl")) {
       perl_ok <- WriteXLS::testPerl(verbose = TRUE)
       if (perl_ok) out <- c(out, "WriteXLS")
     } else {
-      message("Installation of WriteXLS failed.")
+      cli::cli_alert_danger("Installation of WriteXLS failed.")
     }
   }
 
@@ -149,9 +152,9 @@ bib_setup_excel_export <- function(pkgs = c("WriteXLS", "writexl")) {
 
     # install WriteXLS if it is missing
     if (rlang::is_installed("writexl")) {
-      message("Package writexl is already installed.")
+      cli::cli_alert_success("Package writexl is already installed.")
     } else {
-      message("Installing writexl ...")
+      cli::cli_alert_info("Installing writexl ...")
       utils::install.packages("writexl")
     }
 
@@ -159,17 +162,18 @@ bib_setup_excel_export <- function(pkgs = c("WriteXLS", "writexl")) {
     if (rlang::is_installed("writexl")) {
       out <- c(out, "writexl")
     } else {
-      message("Installation of writexl failed.")
+      cli::cli_alert_danger("Installation of writexl failed.")
     }
   }
 
   # check which method will be used for Excel export
   excel_method <- bib_excel_method()
   if (excel_method == "none") {
-    message("Setup failed. Excel export is not possible.\n")
+    cli::cli_alert_danger("Setup failed. Excel export is not possible.")
   } else {
-    message("Setup was successful. Excel export will use package ",
-            excel_method, ".\n")
+    cli::cli_alert_success(
+      "Setup was successful. Excel export will use package {excel_method}."
+    )
   }
 
   invisible(out)

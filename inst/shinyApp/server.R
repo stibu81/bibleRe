@@ -9,7 +9,7 @@ server <- function(input, output, session) {
 
   # deactivate download button, if WriteXLS and/or Perl are not available
   if (bib_excel_method() == "none") {
-    message("Excel export is not possible on this system.")
+    cli::cli_alert_info("Excel export is not possible on this system.")
     shinyjs::disable("download_documents")
   }
 
@@ -28,7 +28,7 @@ server <- function(input, output, session) {
       # the list
       if (!all(data$login)) {
         failed_logins <- names(data$login)[!data$login]
-        warning("Login failed for users ", paste(failed_logins, collapse = ", "))
+        cli::cli_warn(c("x" = "Login failed for users {.val {failed_logins}}."))
         bibleRe:::show_failed_logins(failed_logins)
         users <<- users[data$login]
       }
@@ -151,7 +151,7 @@ server <- function(input, output, session) {
   # renew if OK button is pressed in dialog
   observeEvent(input$confirmRenew, {
     removeModal()
-    message("Renewing ", paste(state$renew$title, collapse = "; "))
+    cli::cli_alert_info("Renewing {.val {state$renew$title}}")
     renew_accounts <- unique(state$renew$account)
     lapply(
       renew_accounts,

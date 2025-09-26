@@ -29,7 +29,8 @@ Imports:
     stringr,
     readr,
     digest,
-    logger
+    logger,
+    cli
 Suggests:
     WriteXLS (>= 6.3.0),
     writexl,

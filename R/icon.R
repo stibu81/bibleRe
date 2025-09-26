@@ -9,7 +9,7 @@ bib_get_icon <- function(file = "~/biblere.ico") {
 
   file <- normalizePath(file, mustWork = FALSE)
   if (file.exists(file)) {
-    stop("The file ", file, " already exists.")
+    cli::cli_abort("The file {file} already exists.")
   }
   if (!stringr::str_detect(file, "\\.ico$")) {
     file <- paste0(file, ".ico")

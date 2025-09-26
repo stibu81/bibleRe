@@ -32,21 +32,22 @@ run_biblere <- function(login_data_file = "~/.biblere_passwords",
     )
 
     if (!file.exists(login_data_file)) {
-      warning("file ", login_data_file, " does not exist.")
+      cli::cli_warn(c("x" = "file {.file {login_data_file}} does not exist."))
     }
 
     options(biblere_login_data_file = login_data_file)
     appDir <- system.file("shinyApp", package = "bibleRe")
     if (appDir == "") {
-      stop("Could not find shiny app. Try re-installing `bibleRe`.",
-           call. = FALSE)
+      cli::cli_abort("Could not find shiny app. Try re-installing `bibleRe`.")
     }
 
     options(biblere_n_due_days = n_due_days,
             biblere_use_switches = use_switches)
 
     if (!is.null(colour_mode) && !colour_mode %in% c("light", "dark")) {
-      warning("colour_mode must be one of \"light\" or \"dark\".")
+      cli::cli_warn(
+        c("!" = "colour_mode must be one of {.val light} or {.val dark}.")
+      )
       colour_mode <- NULL
     }
     options(biblere_colour_mode = colour_mode)

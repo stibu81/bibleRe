@@ -28,13 +28,13 @@ bib_login <- function(username, password) {
       password <- username$password
       username <- username$username
     } else {
-      stop("invalid input for username")
+      cli::cli_abort("invalid input for username")
     }
   }
 
   logger::log_debug("checking the connection")
   if (!bib_check()) {
-    warning("connection failed")
+    cli::cli_warn(c("x" = "connection failed"))
     return(NULL)
   }
 
@@ -58,7 +58,9 @@ bib_login <- function(username, password) {
       session$click(css = "button#btn-login")
     },
     error = function(e) {
-      warning("failed to fill in login form for user ", username)
+      cli::cli_warn(
+        c("x" = "failed to fill in login form for user {.val {username}}.")
+      )
     }
   )
 
@@ -66,11 +68,11 @@ bib_login <- function(username, password) {
   login_success <- wait_until(\() is_logged_in(session))
 
   if (!login_success) {
-    warning("login failed for user ", username)
+    cli::cli_warn(c("x" = "login failed for user {.val {username}}."))
     return(NULL)
   }
 
-  message("login successful for user ", username)
+  cli::cli_alert_success("login successful for user {.val {username}}.")
 
   # bibleRe needs the session to be in German for the
   # extraction of the data to work
@@ -144,7 +146,7 @@ bib_read_login_data <- function(file) {
   logger::log_debug("reading login data from {file}")
 
   if (!file.exists(file)) {
-    warning("File ", file, " does not exist.")
+    cli::cli_warn(c("x" = "File {.val {file}} does not exist."))
     out <- list()
     attr(out, "error_type") <- "file-not-exist"
     return(out)
@@ -154,7 +156,7 @@ bib_read_login_data <- function(file) {
       jsonlite::fromJSON(file)
     },
     error = function(e) {
-      warning("File ", file, " is not a valid json file.")
+      cli::cli_warn(c("x" = "File {.val {file}} is not a valid json file."))
       out <- list()
       attr(out, "error_type") <- "file-not-valid"
       out
