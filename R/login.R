@@ -62,10 +62,8 @@ bib_login <- function(username, password) {
     }
   )
 
-  logger::log_debug("reload login page")
-  jump_to(session, bib_urls$login)
   logger::log_debug("wait on successful login")
-  login_success <- wait_until(is_logged_in(session), timeout = 10)
+  login_success <- wait_until(\() is_logged_in(session))
 
   if (!login_success) {
     warning("login failed for user ", username)
