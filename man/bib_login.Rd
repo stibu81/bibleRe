@@ -4,7 +4,7 @@
 \alias{bib_login}
 \title{Login to the Web Interface}
 \usage{
-bib_login(username, password)
+bib_login(username, password, displayname)
 }
 \arguments{
 \item{username}{character giving the username, which usually
@@ -12,6 +12,9 @@ consists of 6 digits.}
 
 \item{password}{character giving the password. See also
 the security warning under 'Details'.}
+
+\item{displayname}{optional character giving the name of the user to be used
+in log messages. If omitted, the log messages show \code{username}.}
 }
 \value{
 a \code{session} object

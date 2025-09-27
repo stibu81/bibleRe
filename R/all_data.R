@@ -23,7 +23,7 @@ bib_get_all_data <- function(users, with_progress = FALSE) {
         lapply(seq_along(users), function(i) {
           base_msg <- glue("{names(users)[i]} ({i}/{length(users)})")
           shiny::incProgress(0.1, detail = glue("{base_msg}: Einloggen ..."))
-          session <- bib_login(users[[i]])
+          session <- bib_login(users[[i]], displayname = names(users)[i])
           shiny::incProgress(0.5, detail = glue("{base_msg}: Herunterladen ..."))
           userdata <- get_all_data(session)
           shiny::incProgress(0.4, detail = glue("{base_msg}: Fertig!"))

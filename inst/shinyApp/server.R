@@ -159,7 +159,8 @@ server <- function(input, output, session) {
         chk_ids <- filter(state$renew, account == acc) %>%
           pull("chk_id")
         bib_login(users[[acc]][["username"]],
-                  users[[acc]][["password"]]) %>%
+                  users[[acc]][["password"]],
+                  displayname = acc) %>%
           bib_renew(chk_ids)
       })
     # reload documents

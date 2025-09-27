@@ -6,6 +6,8 @@
 #'  consists of 6 digits.
 #' @param password character giving the password. See also
 #'  the security warning under 'Details'.
+#' @param displayname optional character giving the name of the user to be used
+#'  in log messages. If omitted, the log messages show `username`.
 #'
 #' @details
 #' **Security warning:**
@@ -20,7 +22,7 @@
 #'
 #' @export
 
-bib_login <- function(username, password) {
+bib_login <- function(username, password, displayname) {
 
   # is username is a list, check that it contains username and password
   if (is.list(username)) {
@@ -28,8 +30,14 @@ bib_login <- function(username, password) {
       password <- username$password
       username <- username$username
     } else {
-      cli::cli_abort("invalid input for username")
+      cli::cli_abort("invalid input for {.var username}.")
     }
+  }
+
+  if (is.null(displayname)) {
+    displayname <- username
+  } else {
+    displayname <- glue("{displayname} ({username})")
   }
 
   logger::log_debug("checking the connection")
@@ -38,7 +46,7 @@ bib_login <- function(username, password) {
     return(NULL)
   }
 
-  logger::log_debug("logging in user {username}")
+  logger::log_debug("logging in user {.val {displayname}}")
   session <- rvest::read_html_live(bib_urls$base_url)
   logger::log_debug("jump to the login page")
   # use jump_to() to load the login page to ensure that it loads correctly
@@ -59,7 +67,7 @@ bib_login <- function(username, password) {
     },
     error = function(e) {
       cli::cli_warn(
-        c("x" = "failed to fill in login form for user {.val {username}}.")
+        c("x" = "failed to fill in login form for user {.val {displayname}}.")
       )
     }
   )
@@ -68,11 +76,11 @@ bib_login <- function(username, password) {
   login_success <- wait_until(\() is_logged_in(session))
 
   if (!login_success) {
-    cli::cli_warn(c("x" = "login failed for user {.val {username}}."))
+    cli::cli_warn(c("x" = "login failed for user {.val {displayname}}."))
     return(NULL)
   }
 
-  cli::cli_alert_success("login successful for user {.val {username}}.")
+  cli::cli_alert_success("login successful for user {.val {displayname}}.")
 
   # bibleRe needs the session to be in German for the
   # extraction of the data to work
