@@ -4,7 +4,7 @@
 \alias{bib_login}
 \title{Login to the Web Interface}
 \usage{
-bib_login(username, password, displayname)
+bib_login(username, password, displayname = NULL)
 }
 \arguments{
 \item{username}{character giving the username, which usually

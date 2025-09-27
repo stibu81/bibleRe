@@ -13,6 +13,8 @@
 
 bib_get_all_data <- function(users, with_progress = FALSE) {
 
+  check_chrome()
+
   logger::log_debug("downloading all data for users {.val {names(users)}}")
 
   # if running from a shiny app and requested,

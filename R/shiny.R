@@ -17,6 +17,15 @@
 #'  according to the option \code{shiny.launch.browser} is used,
 #'  which in RStudio opens the internal shiny viewer.
 #'
+#' @details
+#' bibleRe uses the [chromote][chromote::chromote]-package to access the library website, which
+#' requires a chromium-based browser to work. You can install such a browser
+#' yourself and set the `CHROMOTE_CHROME` environment variable to the full path
+#' to the browser's executable. In addition, the chromote-package also offers
+#' experimental tools to install and manage multiple chrome-versions.
+#' See [find_chrome()][chromote::find_chrome] and
+#' `vignette("which-chrome", package = "chromote")` for more information.
+#'
 #' @export
 
 run_biblere <- function(login_data_file = "~/.biblere_passwords",
@@ -25,39 +34,41 @@ run_biblere <- function(login_data_file = "~/.biblere_passwords",
                         colour_mode = NULL,
                         launch.browser = NULL) {
 
-    logger::log_debug("running the bibleRe Shiny app")
+  check_chrome()
 
-    rlang::check_installed(
-      c("shiny", "shinythemes", "shinyWidgets", "shinyjs", "DT")
+  logger::log_debug("running the bibleRe Shiny app")
+
+  rlang::check_installed(
+    c("shiny", "shinythemes", "shinyWidgets", "shinyjs", "DT")
+  )
+
+  if (!file.exists(login_data_file)) {
+    cli::cli_warn(c("x" = "file {.file {login_data_file}} does not exist."))
+  }
+
+  options(biblere_login_data_file = login_data_file)
+  appDir <- system.file("shinyApp", package = "bibleRe")
+  if (appDir == "") {
+    cli::cli_abort("Could not find shiny app. Try re-installing `bibleRe`.")
+  }
+
+  options(biblere_n_due_days = n_due_days,
+          biblere_use_switches = use_switches)
+
+  if (!is.null(colour_mode) && !colour_mode %in% c("light", "dark")) {
+    cli::cli_warn(
+      c("!" = "colour_mode must be one of {.val light} or {.val dark}.")
     )
+    colour_mode <- NULL
+  }
+  options(biblere_colour_mode = colour_mode)
 
-    if (!file.exists(login_data_file)) {
-      cli::cli_warn(c("x" = "file {.file {login_data_file}} does not exist."))
-    }
+  if (is.null(launch.browser)) {
+      launch.browser <- getOption("shiny.launch.browser", interactive())
+  }
 
-    options(biblere_login_data_file = login_data_file)
-    appDir <- system.file("shinyApp", package = "bibleRe")
-    if (appDir == "") {
-      cli::cli_abort("Could not find shiny app. Try re-installing `bibleRe`.")
-    }
-
-    options(biblere_n_due_days = n_due_days,
-            biblere_use_switches = use_switches)
-
-    if (!is.null(colour_mode) && !colour_mode %in% c("light", "dark")) {
-      cli::cli_warn(
-        c("!" = "colour_mode must be one of {.val light} or {.val dark}.")
-      )
-      colour_mode <- NULL
-    }
-    options(biblere_colour_mode = colour_mode)
-
-    if (is.null(launch.browser)) {
-        launch.browser <- getOption("shiny.launch.browser", interactive())
-    }
-
-    shiny::runApp(appDir, display.mode = "normal",
-                  launch.browser = launch.browser)
+  shiny::runApp(appDir, display.mode = "normal",
+                launch.browser = launch.browser)
 }
 
 

@@ -49,3 +49,20 @@ wait_until <- function(fun, timeout = 5) {
     Sys.sleep(0.05)
   }
 }
+
+
+# check that a chromium binary is found, issue a message otherwise
+check_chrome <- function(error_call = rlang::caller_env()) {
+  chrome <- suppressMessages(chromote::find_chrome())
+  if (is.null(chrome)) {
+    cli::cli_abort(
+      c(
+        "!" = "No binary of a Chromium-based browser was found. Try setting the",
+        "!" = "{.var CHROMOTE_CHROME} environment variable to the executable of a ",
+        "!" = "Chromium-based browser, such as Google Chrome, Chromium or Brave.",
+        "i" = "See {.help chromote::find_chrome} for more information."
+      ),
+      call = error_call
+    )
+  }
+}

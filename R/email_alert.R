@@ -33,6 +33,8 @@ bib_email_alert <- function(users, n_days, recipients,
                             html = FALSE,
                             verbose = FALSE) {
 
+  check_chrome()
+
   rlang::check_installed("emayili")
 
   if (!bib_check()) {
