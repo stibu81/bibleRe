@@ -22,7 +22,7 @@
 #'
 #' @export
 
-bib_login <- function(username, password, displayname) {
+bib_login <- function(username, password, displayname = NULL) {
 
   # is username is a list, check that it contains username and password
   if (is.list(username)) {
