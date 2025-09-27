@@ -76,7 +76,7 @@ bib_login <- function(username, password) {
 
   # bibleRe needs the session to be in German for the
   # extraction of the data to work
-  logger::log_debug("set language to 'de'")
+  logger::log_debug("set language to {.val de}")
   set_language(session, "de")
 
   logger::log_debug("login process completed")

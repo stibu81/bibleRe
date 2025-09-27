@@ -13,7 +13,7 @@
 
 bib_get_all_data <- function(users, with_progress = FALSE) {
 
-  logger::log_debug("downloading all data for users {names(users)}")
+  logger::log_debug("downloading all data for users {.val {names(users)}}")
 
   # if running from a shiny app and requested,
   # show progress indicator
@@ -38,11 +38,25 @@ bib_get_all_data <- function(users, with_progress = FALSE) {
     }
   names(all_data) <- names(users)
 
+  logger::log_debug("download of data for users {.val {names(users)}} completed.")
+
+  login_successfull <- !vapply(all_data, is.null, logical(1))
+  if (any(login_successfull)) {
+    logger::log_debug(
+      "login successfull for users {.val {names(users)[login_successfull]}}"
+    )
+  }
+  if (any(!login_successfull)) {
+    logger::log_debug(
+      "login failed for users {.val {names(users)[!login_successfull]}}"
+    )
+  }
+
   list(documents = bind_bib_data(all_data, "documents"),
        orders = bind_bib_data(all_data, "orders"),
        fees = bind_bib_data(all_data, "fees"),
        watchlist = bind_bib_data(all_data, "watchlist"),
-       login = !vapply(all_data, is.null, logical(1)))
+       login = login_successfull)
 }
 
 
@@ -60,9 +74,7 @@ get_all_data <- function(session) {
 
 # helper function to extract and combine bib data
 bind_bib_data <- function(data, type) {
-
   accounts <- names(data)
   lapply(data, getElement, type) %>%
     dplyr::bind_rows(.id = "account")
-
 }
