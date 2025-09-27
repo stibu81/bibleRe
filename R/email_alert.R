@@ -61,7 +61,7 @@ bib_email_alert <- function(users, n_days, recipients,
 
       cli::cli_alert_info(
         c("{nrow(relevant_docs)} document{?s} must be returned in the next ",
-          "{n_days} day{?2}.")
+          "{n_days} day{?s}.")
       )
 
   } else {
