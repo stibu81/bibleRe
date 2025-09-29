@@ -176,32 +176,6 @@ bib_read_login_data <- function(file) {
 }
 
 
-#' Encrypt Password
-#'
-#' The page uses simple encryption to make the transfer of passwords more
-#' secure. This function applies the appropriate encryption to generate a
-#' password that can be used for login.
-#'
-#' @param password character giving the password to be encrypted
-#'
-#' @export
-
-bib_encrypt <- function(password) {
-
-  # this just gets a timestamp from the server. Creating the timestamp
-  # in the code does not work reliably. Maybe, only timestamps that have been
-  # request from the server will work?
-  timestamp <- rvest::read_html(bib_urls$timestamp) %>%
-    rvest::html_element("p") %>%
-    rvest::html_text()
-  enc <- paste0(timestamp, ":", password) %>%
-    digest::digest(serialize = FALSE) %>%
-    toupper()
-
-  paste0(timestamp, ":", enc)
-}
-
-
 #' Check Whether the Login Page Is Reachable
 #'
 #' Check whether the login page can be reached. If this fails, either there is
