@@ -211,3 +211,17 @@ show_failed_logins <- function(failed_logins) {
     )
   )
 }
+
+
+show_unknown_error <- function(error) {
+  shiny::showModal(
+    shiny::modalDialog(
+      "Ein Fehler ist aufgetreten. Fehlermeldung: ",
+      error$message,
+      title = "Unbekannter Fehler",
+      footer = shiny::modalButton("OK") %>%
+        shiny::tagAppendAttributes(class = "btn btn-primary"),
+      easyClose = TRUE
+    )
+  )
+}

@@ -6,6 +6,7 @@ server <- function(input, output, session) {
 
   state <- reactiveValues(get_data = 0,
                           renew = NULL)
+  run <- TRUE
 
   # deactivate download button, if WriteXLS and/or Perl are not available
   if (bib_excel_method() == "none") {
@@ -17,17 +18,35 @@ server <- function(input, output, session) {
   users <- bib_read_login_data(getOption("biblere_login_data_file"))
   if (length(users) == 0) {
     bibleRe:::show_login_file_missing(getOption("biblere_login_data_file"), users)
+    run <- FALSE
   }
 
   # check if chromium-browser ist installed
-  if (inherits(try(bibleRe:::check_chrome(), silent = TRUE), "try-error")) {
+  if (run &&
+      inherits(try(bibleRe:::check_chrome(), silent = TRUE), "try-error")) {
     bibleRe:::show_no_chrome()
+    run <- FALSE
   }
+
+  # check connection
+  if (run && !bib_check()) {
+    bibleRe:::show_no_connection()
+    run <- FALSE
+  }
+
 
   # get documents, if state$get_data is incremented
   all_data <- eventReactive(state$get_data, {
-    if (length(users) > 0 && (bc <- bib_check())) {
-      data <- bib_get_all_data(users, with_progress = TRUE)
+    if (run) {
+      data <- tryCatch(
+        bib_get_all_data(users, with_progress = TRUE),
+        error = function(e) e
+      )
+
+      if (inherits(data, "error")) {
+        bibleRe:::show_unknown_error(data)
+        return(NULL)
+      }
 
       # check success of login. Warn in case of failure and remove the users from
       # the list
@@ -66,10 +85,6 @@ server <- function(input, output, session) {
         bibleRe:::prepare_date_input(data, session, input$select_account)
         data
       }
-    } else {
-      # one reason to end up here is that bib_check() failed. If so, show message.
-      if (!bc) bibleRe:::show_no_connection()
-      NULL
     }
   })
 
@@ -88,7 +103,9 @@ server <- function(input, output, session) {
 
   # update the highlighted dates if the account is changed
   observeEvent(input$select_account, {
-    bibleRe:::prepare_date_input(all_data(), session, input$select_account)
+    if (!is.null(all_data())) {
+      bibleRe:::prepare_date_input(all_data(), session, input$select_account)
+    }
   })
 
   # table output
