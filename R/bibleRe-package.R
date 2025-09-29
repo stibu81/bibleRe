@@ -38,12 +38,6 @@ bib_urls <- dplyr::tibble(
 
 globalVariables(".")
 
-# dependencies chromote and R6 are never used in the code => use them here
-# to prevent complaints from R CMD check
-imports_dummy <- function() {
-  R6::R6Class
-}
-
 
 .onLoad <- function(libname, pkgname) {
   logger::log_formatter(logger::formatter_cli)

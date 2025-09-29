@@ -17,7 +17,6 @@ Imports:
     utils,
     rvest (>= 1.0.5),
     chromote,
-    R6,
     jsonlite,
     lubridate,
     rlang,
