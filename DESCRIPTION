@@ -24,7 +24,6 @@ Imports:
     glue,
     xml2,
     dplyr,
-    magrittr,
     stringr,
     readr,
     logger,

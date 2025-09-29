@@ -83,7 +83,7 @@ bib_write_excel <- function(table, file,
     )
   } else if (excel_method == "writexl") {
     list(export_table) %>%
-      magrittr::set_names(get_table_name(type)) %>%
+      rlang::set_names(get_table_name(type)) %>%
       writexl::write_xlsx(file)
   } else {
     cli::cli_warn(
@@ -192,17 +192,17 @@ create_export_table <- function(table,
 
   # remove links from columns id and author
   if ("id" %in% names(table)) {
-    table %<>% dplyr::mutate(id = rm_link(.data$id))
+    table <- table %>% dplyr::mutate(id = rm_link(.data$id))
   }
   if ("author" %in% names(table)) {
-    table %<>% dplyr::mutate(author = rm_link(.data$author))
+    table <- table %>% dplyr::mutate(author = rm_link(.data$author))
   }
 
   # convert dates, rename columns
-  table %<>%
+  table <- table %>%
     dplyr::mutate_at(date_cols,
                      ~format(., format = "%d.%m.%Y")) %>%
-    magrittr::set_names(col_names)
+    rlang::set_names(col_names)
 
   # remove hidden columns
   table <- table[, !names(table) %in% hide_cols]

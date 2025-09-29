@@ -41,7 +41,7 @@ system.file("example/biblere_passwords.json", package = "bibleRe")
 The structure of the file is as follows:
 
 ```{r echo = FALSE, comment = ""}
-library(magrittr)
+library(dplyr, warn.conflicts = FALSE)
 system.file("example/biblere_passwords.json", package = "bibleRe") %>%
   readr::read_lines() %>%
   cat(sep = "\n")

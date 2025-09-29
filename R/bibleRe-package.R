@@ -2,8 +2,7 @@
 #'
 #' @docType package
 #'
-#' @importFrom magrittr %>% %<>%
-#' @importFrom dplyr .data
+#' @importFrom dplyr .data %>%
 #' @importFrom glue glue
 #' @keywords internal
 "_PACKAGE"

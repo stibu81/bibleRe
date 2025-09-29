@@ -88,21 +88,21 @@ prepare_table <- function(data,
   # only table of documents is ordered by and filtered for due_date
   # and non-renewable documents
   if (type == "documents") {
-    table %<>% dplyr::filter(.data$due_date <= !!due_date) %>%
+    table <- table %>% dplyr::filter(.data$due_date <= !!due_date) %>%
       dplyr::arrange(.data$due_date) %>%
       dplyr::mutate(due = .data$due_date <= lubridate::today())
     if (only_non_renwable) {
-      table %<>% dplyr::filter(.data$n_renewal >= 2)
+      table <- table %>% dplyr::filter(.data$n_renewal >= 2)
     }
   }
 
   if (account != "alle") {
-    table %<>% dplyr::filter(.data$account == !!account)
+    table <- table %>% dplyr::filter(.data$account == !!account)
   }
 
   # convert document id and author to link
   if (type %in%  c("documents", "orders")) {
-    table %<>%
+    table <- table %>%
       dplyr::mutate(id = as_link(.data$id, .data$link),
                     author = as_link(.data$author, .data$author_search)) %>%
       dplyr::select(-"link", -"author_search")
@@ -111,7 +111,7 @@ prepare_table <- function(data,
   # there is no link to the document in the watchlist because it actually
   # points to the item in the watchlist, which only works with login
   if (type ==  "watchlist") {
-    table %<>%
+    table <- table %>%
       dplyr::mutate(author = as_link(.data$author, .data$author_search)) %>%
       dplyr::select(-"author_search")
   }
@@ -217,20 +217,22 @@ create_datatable <- function(table,
 
   # only for fees: format column amount as currency
   if (type == "fees") {
-    data_table %<>% DT::formatCurrency("amount",
-                                       currency = " CHF",
-                                       mark = "'",
-                                       before = FALSE)
+    data_table <- data_table %>%
+      DT::formatCurrency("amount",
+                         currency = " CHF",
+                         mark = "'",
+                         before = FALSE)
   }
 
   # only for documents: use red text if due date is passed
   if (type == "documents") {
-    data_table %<>% DT::formatStyle(
-      "due_date",
-      valueColumns = "due",
-      target = "cell",
-      color = DT::styleEqual(c(FALSE, TRUE), c(NA, "red"))
-    )
+    data_table <- data_table %>%
+      DT::formatStyle(
+        "due_date",
+        valueColumns = "due",
+        target = "cell",
+        color = DT::styleEqual(c(FALSE, TRUE), c(NA, "red"))
+      )
   }
 
   data_table

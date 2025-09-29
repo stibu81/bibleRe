@@ -1,4 +1,3 @@
-library(magrittr)
 library(bibleRe)
 library(dplyr)
 
