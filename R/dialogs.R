@@ -158,6 +158,29 @@ show_login_file_missing <- function(file, users) {
 }
 
 
+# messages if no chromium browser found
+show_no_chrome <- function() {
+  shiny::showModal(
+    shiny::modalDialog(
+        "Setze die Umgebungsvariable ", shiny::code("CHROMOTE_CHROME"),
+        " auf den vollen Pfad zu einem Chromium-basierten Browser wie ",
+        "Google Chrome Chromium oder Brave.",
+        shiny::br(), shiny::br(),
+        "Siehe ",
+        shiny::a(
+          href = "https://rstudio.github.io/chromote/articles/which-chrome.html",
+          "hier"
+        ),
+        "f\u00fcr mehr Informationen.",
+      title = "Kein Chromimum-Browser gefunden",
+      footer = shiny::modalButton("OK") %>%
+        shiny::tagAppendAttributes(class = "btn btn-primary"),
+      easyClose = TRUE
+    )
+  )
+}
+
+
 # message if no connection to the server
 show_no_connection <- function() {
 

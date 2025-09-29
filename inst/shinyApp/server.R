@@ -19,6 +19,11 @@ server <- function(input, output, session) {
     bibleRe:::show_login_file_missing(getOption("biblere_login_data_file"), users)
   }
 
+  # check if chromium-browser ist installed
+  if (inherits(try(bibleRe:::check_chrome(), silent = TRUE), "try-error")) {
+    bibleRe:::show_no_chrome()
+  }
+
   # get documents, if state$get_data is incremented
   all_data <- eventReactive(state$get_data, {
     if (length(users) > 0 && (bc <- bib_check())) {

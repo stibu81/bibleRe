@@ -34,7 +34,8 @@ run_biblere <- function(login_data_file = "~/.biblere_passwords",
                         colour_mode = NULL,
                         launch.browser = NULL) {
 
-  check_chrome()
+  # in interactive mode, abort already here when no chromium-browser is found
+  if (interactive()) check_chrome()
 
   logger::log_debug("running the bibleRe Shiny app")
 
