@@ -6,6 +6,8 @@
 #'  consists of 6 digits.
 #' @param password character giving the password. See also
 #'  the security warning under 'Details'.
+#' @param displayname optional character giving the name of the user to be used
+#'  in log messages. If omitted, the log messages show `username`.
 #'
 #' @details
 #' **Security warning:**
@@ -20,7 +22,9 @@
 #'
 #' @export
 
-bib_login <- function(username, password) {
+bib_login <- function(username, password, displayname = NULL) {
+
+  check_chrome()
 
   # is username is a list, check that it contains username and password
   if (is.list(username)) {
@@ -28,31 +32,84 @@ bib_login <- function(username, password) {
       password <- username$password
       username <- username$username
     } else {
-      stop("invalid input for username")
+      cli::cli_abort("invalid input for {.var username}.")
     }
   }
 
+  if (is.null(displayname)) {
+    displayname <- username
+  } else {
+    displayname <- glue("{displayname} ({username})")
+  }
+
+  logger::log_debug("checking the connection")
   if (!bib_check()) {
-    warning("connection failed")
+    cli::cli_warn(c("x" = "connection failed"))
     return(NULL)
   }
 
-  session <- rvest::session(bib_urls$login)
-  form <- rvest::html_form(session)[[2]]
-  filled_form <- rvest::html_form_set(form,
-                                      Username = username,
-                                      Password = bib_encrypt(password))
-  session <- rvest::session_submit(session, filled_form)
+  logger::log_debug("logging in user {.val {displayname}}")
+  session <- rvest::read_html_live(bib_urls$base_url)
+  logger::log_debug("jump to the login page")
+  # use jump_to() to load the login page to ensure that it loads correctly
+  jump_to(session, bib_urls$login)
 
-  # if the urls associated with the session is still the same,
-  # login has not worked. => issue a warning
-  if (session$response$status_code != 200 || session$url == bib_urls$login) {
-    warning("login failed")
+  # make sure that no user is logged in
+  logger::log_debug("make sure no user is logged in")
+  bib_logout(session)
+  jump_to(session, bib_urls$login)
+
+  tryCatch({
+      logger::log_debug("type in username")
+      session$type(username, css = "input#wo-account-login-username")
+      logger::log_debug("type in password")
+      session$type(password, css = "input#wo-account-login-password")
+      logger::log_debug("click login button")
+      session$click(css = "button#btn-login")
+    },
+    error = function(e) {
+      cli::cli_warn(
+        c("x" = "failed to fill in login form for user {.val {displayname}}.")
+      )
+    }
+  )
+
+  logger::log_debug("wait on successful login")
+  login_success <- wait_until(\() is_logged_in(session))
+
+  if (!login_success) {
+    cli::cli_warn(c("x" = "login failed for user {.val {displayname}}."))
     return(NULL)
   }
 
+  cli::cli_alert_success("login successful for user {.val {displayname}}.")
+
+  # bibleRe needs the session to be in German for the
+  # extraction of the data to work
+  logger::log_debug("set language to {.val de}")
+  set_language(session, "de")
+
+  logger::log_debug("login process completed")
   session
+}
 
+
+#' Log out a running session
+#'
+#' Log out from a running session with the web interface.
+#'
+#' @param session the session object of the session with the web interface.
+#'
+#' @returns
+#' x invisibly. The `session` is modified as a side effect.
+#'
+#' @export
+
+bib_logout <- function(session) {
+  if (is_logged_in(session)) {
+    logger::log_debug("logging out")
+    jump_to(session, bib_urls$logout)
+  }
 }
 
 
@@ -96,8 +153,10 @@ bib_login <- function(username, password) {
 
 bib_read_login_data <- function(file) {
 
+  logger::log_debug("reading login data from {file}")
+
   if (!file.exists(file)) {
-    warning("File ", file, " does not exist.")
+    cli::cli_warn(c("x" = "File {.val {file}} does not exist."))
     out <- list()
     attr(out, "error_type") <- "file-not-exist"
     return(out)
@@ -107,39 +166,13 @@ bib_read_login_data <- function(file) {
       jsonlite::fromJSON(file)
     },
     error = function(e) {
-      warning("File ", file, " is not a valid json file.")
+      cli::cli_warn(c("x" = "File {.val {file}} is not a valid json file."))
       out <- list()
       attr(out, "error_type") <- "file-not-valid"
       out
     }
   )
 
-}
-
-
-#' Encrypt Password
-#'
-#' The page uses simple encryption to make the transfer of passwords more
-#' secure. This function applies the appropriate encryption to generate a
-#' password that can be used for login.
-#'
-#' @param password character giving the password to be encrypted
-#'
-#' @export
-
-bib_encrypt <- function(password) {
-
-  # this just gets a timestamp from the server. Creating the timestamp
-  # in the code does not work reliably. Maybe, only timestamps that have been
-  # request from the server will work?
-  timestamp <- rvest::read_html(bib_urls$timestamp) %>%
-    rvest::html_element("p") %>%
-    rvest::html_text()
-  enc <- paste0(timestamp, ":", password) %>%
-    digest::digest(serialize = FALSE) %>%
-    toupper()
-
-  paste0(timestamp, ":", enc)
 }
 
 
@@ -160,5 +193,12 @@ bib_check <- function(silent = TRUE) {
   !(inherits(session, "try-error") || session$response$status_code != 200)
 }
 
+get_account_box <- function(session) {
+  # this tag exists ONLY if a user is logged in
+  rvest::html_element(session, css = "div.wo-account-btn-text")
+}
 
+is_logged_in <- function(session) {
+  isTRUE(try(length(get_account_box(session)) > 0, silent = TRUE))
+}
 

@@ -13,11 +13,13 @@
 
 bib_list_watchlist <- function(session) {
 
-  page <- rvest::session_jump_to(session, bib_urls$watchlist)
+  logger::log_debug("jump to watchlist page")
+  jump_to(session, bib_urls$watchlist)
 
-  # extract the node with the document table
-  tab_node <- page %>%
-    rvest::html_element(xpath = "//table[@class='table wo-grid-table']")
+  # extract the node with the watchlist table
+  logger::log_debug("extract the watchlist table")
+  tab_node <- session %>%
+    rvest::html_element(css = "table.wo-grid-table")
 
   if (length(tab_node) > 0) {
     table <- extract_watchlist_table(tab_node) %>%
@@ -37,6 +39,7 @@ bib_list_watchlist <- function(session) {
     )
   }
 
+  logger::log_debug("watchlist table completed")
   table
 }
 
@@ -51,9 +54,10 @@ extract_watchlist_table <- function(tab_node) {
                   kind_age = "Medienart / Alter",
                   library = "Bibliothek")
 
-  # every other row contains no meaningful information
+  # remove the rows containing the summary of items
   if (nrow(table) > 0) {
-    table <- table[seq(1, nrow(table), by = 2), ]
+    table <- table %>%
+      dplyr::filter(!stringr::str_detect(.data$author_title, "^\\d+ Ex\\."))
   }
 
   table %>%
@@ -69,6 +73,12 @@ extract_watchlist_table <- function(tab_node) {
       kind = stringr::str_trim(.data$kind),
       age = stringr::str_trim(.data$age)
     ) %>%
-    tidyr::replace_na(list(author = "---", title = "---"))
+    tidyr::replace_na(list(author = "---", title = "---")) %>%
+    dplyr::summarise(
+      library = .data$library %>%
+        stringr::str_remove("Bibliothek *") %>%
+        paste0(collapse = ", "),
+      .by = "author":"age"
+    )
 
 }

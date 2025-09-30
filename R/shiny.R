@@ -17,6 +17,15 @@
 #'  according to the option \code{shiny.launch.browser} is used,
 #'  which in RStudio opens the internal shiny viewer.
 #'
+#' @details
+#' bibleRe uses the [chromote][chromote::chromote]-package to access the library website, which
+#' requires a chromium-based browser to work. You can install such a browser
+#' yourself and set the `CHROMOTE_CHROME` environment variable to the full path
+#' to the browser's executable. In addition, the chromote-package also offers
+#' experimental tools to install and manage multiple chrome-versions.
+#' See [find_chrome()][chromote::find_chrome] and
+#' `vignette("which-chrome", package = "chromote")` for more information.
+#'
 #' @export
 
 run_biblere <- function(login_data_file = "~/.biblere_passwords",
@@ -25,36 +34,42 @@ run_biblere <- function(login_data_file = "~/.biblere_passwords",
                         colour_mode = NULL,
                         launch.browser = NULL) {
 
-    rlang::check_installed(
-      c("shiny", "shinythemes", "shinyWidgets", "shinyjs", "DT")
+  # in interactive mode, abort already here when no chromium-browser is found
+  if (interactive()) check_chrome()
+
+  logger::log_debug("running the bibleRe Shiny app")
+
+  rlang::check_installed(
+    c("shiny", "shinythemes", "shinyWidgets", "shinyjs", "DT")
+  )
+
+  if (!file.exists(login_data_file)) {
+    cli::cli_warn(c("x" = "file {.file {login_data_file}} does not exist."))
+  }
+
+  options(biblere_login_data_file = login_data_file)
+  appDir <- system.file("shinyApp", package = "bibleRe")
+  if (appDir == "") {
+    cli::cli_abort("Could not find shiny app. Try re-installing `bibleRe`.")
+  }
+
+  options(biblere_n_due_days = n_due_days,
+          biblere_use_switches = use_switches)
+
+  if (!is.null(colour_mode) && !colour_mode %in% c("light", "dark")) {
+    cli::cli_warn(
+      c("!" = "colour_mode must be one of {.val light} or {.val dark}.")
     )
+    colour_mode <- NULL
+  }
+  options(biblere_colour_mode = colour_mode)
 
-    if (!file.exists(login_data_file)) {
-      warning("file ", login_data_file, " does not exist.")
-    }
+  if (is.null(launch.browser)) {
+      launch.browser <- getOption("shiny.launch.browser", interactive())
+  }
 
-    options(biblere_login_data_file = login_data_file)
-    appDir <- system.file("shinyApp", package = "bibleRe")
-    if (appDir == "") {
-      stop("Could not find shiny app. Try re-installing `bibleRe`.",
-           call. = FALSE)
-    }
-
-    options(biblere_n_due_days = n_due_days,
-            biblere_use_switches = use_switches)
-
-    if (!is.null(colour_mode) && !colour_mode %in% c("light", "dark")) {
-      warning("colour_mode must be one of \"light\" or \"dark\".")
-      colour_mode <- NULL
-    }
-    options(biblere_colour_mode = colour_mode)
-
-    if (is.null(launch.browser)) {
-        launch.browser <- getOption("shiny.launch.browser", interactive())
-    }
-
-    shiny::runApp(appDir, display.mode = "normal",
-                  launch.browser = launch.browser)
+  shiny::runApp(appDir, display.mode = "normal",
+                launch.browser = launch.browser)
 }
 
 
@@ -73,21 +88,21 @@ prepare_table <- function(data,
   # only table of documents is ordered by and filtered for due_date
   # and non-renewable documents
   if (type == "documents") {
-    table %<>% dplyr::filter(.data$due_date <= !!due_date) %>%
+    table <- table %>% dplyr::filter(.data$due_date <= !!due_date) %>%
       dplyr::arrange(.data$due_date) %>%
       dplyr::mutate(due = .data$due_date <= lubridate::today())
     if (only_non_renwable) {
-      table %<>% dplyr::filter(.data$n_renewal >= 2)
+      table <- table %>% dplyr::filter(.data$n_renewal >= 2)
     }
   }
 
   if (account != "alle") {
-    table %<>% dplyr::filter(.data$account == !!account)
+    table <- table %>% dplyr::filter(.data$account == !!account)
   }
 
   # convert document id and author to link
   if (type %in%  c("documents", "orders")) {
-    table %<>%
+    table <- table %>%
       dplyr::mutate(id = as_link(.data$id, .data$link),
                     author = as_link(.data$author, .data$author_search)) %>%
       dplyr::select(-"link", -"author_search")
@@ -96,7 +111,7 @@ prepare_table <- function(data,
   # there is no link to the document in the watchlist because it actually
   # points to the item in the watchlist, which only works with login
   if (type ==  "watchlist") {
-    table %<>%
+    table <- table %>%
       dplyr::mutate(author = as_link(.data$author, .data$author_search)) %>%
       dplyr::select(-"author_search")
   }
@@ -202,20 +217,22 @@ create_datatable <- function(table,
 
   # only for fees: format column amount as currency
   if (type == "fees") {
-    data_table %<>% DT::formatCurrency("amount",
-                                       currency = " CHF",
-                                       mark = "'",
-                                       before = FALSE)
+    data_table <- data_table %>%
+      DT::formatCurrency("amount",
+                         currency = " CHF",
+                         mark = "'",
+                         before = FALSE)
   }
 
   # only for documents: use red text if due date is passed
   if (type == "documents") {
-    data_table %<>% DT::formatStyle(
-      "due_date",
-      valueColumns = "due",
-      target = "cell",
-      color = DT::styleEqual(c(FALSE, TRUE), c(NA, "red"))
-    )
+    data_table <- data_table %>%
+      DT::formatStyle(
+        "due_date",
+        valueColumns = "due",
+        target = "cell",
+        color = DT::styleEqual(c(FALSE, TRUE), c(NA, "red"))
+      )
   }
 
   data_table

@@ -33,10 +33,12 @@ bib_email_alert <- function(users, n_days, recipients,
                             html = FALSE,
                             verbose = FALSE) {
 
+  check_chrome()
+
   rlang::check_installed("emayili")
 
   if (!bib_check()) {
-    warning("connection failed")
+    cli::cli_warn(c("x" = "connection failed"))
     return(FALSE)
   }
 
@@ -59,8 +61,10 @@ bib_email_alert <- function(users, n_days, recipients,
                       "F\u00e4lligkeit" = "due_date",
                       "Verl." = "n_renewal")
 
-      message(nrow(relevant_docs), " document(s) must be returned in the next ",
-                  n_days, " days")
+      cli::cli_alert_info(
+        c("{nrow(relevant_docs)} document{?s} must be returned in the next ",
+          "{n_days} day{?s}.")
+      )
 
   } else {
     relevant_docs <- dplyr::tibble("Verl." = numeric(0))
@@ -68,7 +72,7 @@ bib_email_alert <- function(users, n_days, recipients,
 
   if (nrow(relevant_docs) > 0 || any(!logins)) {
 
-    message("Sending email ...")
+    cli::cli_alert_info("Sending email ...")
 
     # avoid non-ascii characters in subject!
     # Only mention loans that run out, if there are any
@@ -102,11 +106,11 @@ bib_email_alert <- function(users, n_days, recipients,
     success <- try(smtp(email, verbose = verbose))
 
     if (inherits(success, "try-error")) {
-      warning("Sending email failed.")
+      cli::cli_warn(c("x" = "Sending email failed."))
       return(FALSE)
     }
   } else {
-    message("No rentals are running out => no email was sent")
+    cli::cli_alert_info("No rentals are running out => no email was sent")
   }
 
   return(TRUE)

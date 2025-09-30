@@ -2,8 +2,8 @@
 #'
 #' @docType package
 #'
-#' @importFrom magrittr %>% %<>%
-#' @importFrom dplyr .data
+#' @importFrom dplyr .data %>%
+#' @importFrom glue glue
 #' @keywords internal
 "_PACKAGE"
 
@@ -32,7 +32,13 @@ bib_urls <- dplyr::tibble(
   fees = paste0(base_url, "account/fees"),
   orders = paste0(base_url, "account/orders"),
   watchlist = paste0(base_url, "watchlist?sort=Notices.Author%2CNotices.Title&page=1&pageSize=500"),
-  timestamp = paste0(base_url, "handler/timestamp")
+  logout = paste0(base_url, "account/logout")
 )
 
 globalVariables(".")
+
+
+.onLoad <- function(libname, pkgname) {
+  logger::log_formatter(logger::formatter_cli)
+  logger::log_debug("logging with logger...")
+}

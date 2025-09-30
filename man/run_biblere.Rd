@@ -37,3 +37,12 @@ which in RStudio opens the internal shiny viewer.}
 \description{
 Run the application
 }
+\details{
+bibleRe uses the \link[chromote:chromote-package]{chromote}-package to access the library website, which
+requires a chromium-based browser to work. You can install such a browser
+yourself and set the \code{CHROMOTE_CHROME} environment variable to the full path
+to the browser's executable. In addition, the chromote-package also offers
+experimental tools to install and manage multiple chrome-versions.
+See \link[chromote:find_chrome]{find_chrome()} and
+\code{vignette("which-chrome", package = "chromote")} for more information.
+}

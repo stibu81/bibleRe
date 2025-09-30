@@ -1,4 +1,3 @@
-library(magrittr)
 library(bibleRe)
 library(dplyr)
 
@@ -6,10 +5,11 @@ server <- function(input, output, session) {
 
   state <- reactiveValues(get_data = 0,
                           renew = NULL)
+  run <- TRUE
 
   # deactivate download button, if WriteXLS and/or Perl are not available
   if (bib_excel_method() == "none") {
-    message("Excel export is not possible on this system.")
+    cli::cli_alert_info("Excel export is not possible on this system.")
     shinyjs::disable("download_documents")
   }
 
@@ -17,18 +17,41 @@ server <- function(input, output, session) {
   users <- bib_read_login_data(getOption("biblere_login_data_file"))
   if (length(users) == 0) {
     bibleRe:::show_login_file_missing(getOption("biblere_login_data_file"), users)
+    run <- FALSE
   }
+
+  # check if chromium-browser ist installed
+  if (run &&
+      inherits(try(bibleRe:::check_chrome(), silent = TRUE), "try-error")) {
+    bibleRe:::show_no_chrome()
+    run <- FALSE
+  }
+
+  # check connection
+  if (run && !bib_check()) {
+    bibleRe:::show_no_connection()
+    run <- FALSE
+  }
+
 
   # get documents, if state$get_data is incremented
   all_data <- eventReactive(state$get_data, {
-    if (length(users) > 0 && (bc <- bib_check())) {
-      data <- bib_get_all_data(users, with_progress = TRUE)
+    if (run) {
+      data <- tryCatch(
+        bib_get_all_data(users, with_progress = TRUE),
+        error = function(e) e
+      )
+
+      if (inherits(data, "error")) {
+        bibleRe:::show_unknown_error(data)
+        return(NULL)
+      }
 
       # check success of login. Warn in case of failure and remove the users from
       # the list
       if (!all(data$login)) {
         failed_logins <- names(data$login)[!data$login]
-        warning("Login failed for users ", paste(failed_logins, collapse = ", "))
+        cli::cli_warn(c("x" = "Login failed for users {.val {failed_logins}}."))
         bibleRe:::show_failed_logins(failed_logins)
         users <<- users[data$login]
       }
@@ -44,8 +67,6 @@ server <- function(input, output, session) {
                         "select_account",
                         choices = choices,
                         selected = choices[1])
-      message("Getting data for user(s) ",
-              paste(names(users), collapse = ", "))
 
       # if this is a reload after a renewal, check that renewal
       # was successful by checking that all the renewed documents
@@ -63,10 +84,6 @@ server <- function(input, output, session) {
         bibleRe:::prepare_date_input(data, session, input$select_account)
         data
       }
-    } else {
-      # one reason to end up here is that bib_check() failed. If so, show message.
-      if (!bc) bibleRe:::show_no_connection()
-      NULL
     }
   })
 
@@ -85,7 +102,9 @@ server <- function(input, output, session) {
 
   # update the highlighted dates if the account is changed
   observeEvent(input$select_account, {
-    bibleRe:::prepare_date_input(all_data(), session, input$select_account)
+    if (!is.null(all_data())) {
+      bibleRe:::prepare_date_input(all_data(), session, input$select_account)
+    }
   })
 
   # table output
@@ -153,7 +172,7 @@ server <- function(input, output, session) {
   # renew if OK button is pressed in dialog
   observeEvent(input$confirmRenew, {
     removeModal()
-    message("Renewing ", paste(state$renew$title, collapse = "; "))
+    cli::cli_alert_info("Renewing {.val {state$renew$title}}")
     renew_accounts <- unique(state$renew$account)
     lapply(
       renew_accounts,
@@ -161,7 +180,8 @@ server <- function(input, output, session) {
         chk_ids <- filter(state$renew, account == acc) %>%
           pull("chk_id")
         bib_login(users[[acc]][["username"]],
-                  users[[acc]][["password"]]) %>%
+                  users[[acc]][["password"]],
+                  displayname = acc) %>%
           bib_renew(chk_ids)
       })
     # reload documents

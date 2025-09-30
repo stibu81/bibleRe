@@ -10,22 +10,24 @@ Description: The public library of Koeniz, Switzerland, offers a
   multiple accounts simultaneously.
 License: MIT + file LICENSE
 Encoding: UTF-8
-LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
+Depends: R (>= 4.1.0)
 Imports: 
     utils,
-    rvest (>= 1.0.0),
+    rvest (>= 1.0.5),
+    chromote,
     jsonlite,
     lubridate,
     rlang,
     tidyr,
+    glue,
     xml2,
     dplyr,
-    magrittr,
     stringr,
     readr,
-    digest
+    logger,
+    cli
 Suggests:
     WriteXLS (>= 6.3.0),
     writexl,

@@ -11,11 +11,13 @@
 
 bib_list_orders <- function(session) {
 
-  page <- rvest::session_jump_to(session, bib_urls$orders)
+  logger::log_debug("jump to orders page")
+  jump_to(session, bib_urls$orders)
 
   # extract the node with the document table
-  tab_node <- page %>%
-    rvest::html_element(xpath = "//table[@class='table wo-grid-table']")
+  logger::log_debug("extract the orders table")
+  tab_node <- session %>%
+    rvest::html_element(css = "table.wo-grid-table")
 
   if (length(tab_node) > 0) {
     table <- extract_orders_table(tab_node) %>%
@@ -33,6 +35,7 @@ bib_list_orders <- function(session) {
     )
   }
 
+  logger::log_debug("orders table completed")
   table
 }
 
